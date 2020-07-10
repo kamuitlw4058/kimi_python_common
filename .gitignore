@@ -1,1 +1,3 @@
 *.json
+dist/*
+zmc_common.egg-info/*
