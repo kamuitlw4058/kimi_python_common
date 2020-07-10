@@ -51,7 +51,7 @@ def lnglat(address):
         r = requests.get(url)
         j = r.json()
         location  = ''
-        location =  str(j['geocodes'][0]['location'])
+        location = [float(i)  for i in  str(j['geocodes'][0]['location']).split(","))
     except Exception as e:
         location =None
     return location 
