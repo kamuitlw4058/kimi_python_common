@@ -7,8 +7,18 @@ key_list  =[
     '72107dc0ff737e02cd2d746727d401d7', # 范静
     '000e0f6badb3dbc853b2cbb0ec16ad08', # 范国金
     'fba16c9c0b911b89c7390b867b9a8026', # 宋佳敏
+    'f912108a689c0cebf24e7fc064f0bc95', # 唐宁
     ]
 
+key_dic = None
+
+
+
+class CommonLocationOverLimitException(Exception):
+    def __init__(self,msg):
+        self.msg = msg
+    def __str__(self):
+        return self.msg
 
 def get_example():
     return {'status': '1', 
@@ -34,27 +44,65 @@ def get_example():
         ]
     }
 
-def _get_key():
-    return  key_list[random.randint(0,len(key_list) -1)]
+def get_error_example_over_limit():
+    return {'status': '0', 'info': 'DAILY_QUERY_OVER_LIMIT', 'infocode': '10003'}
 
-def location(address):
-    key = _get_key()
+
+def _get_key():
+    global key_dic
+    global key_list
+
+    if key_dic is None:
+        key_dic = {}
+        for i in key_list:
+            key_dic[i] = 1
+
+    return  list(key_dic)[random.randint(0,len(key_list) -1)]
+
+def _pop_key(key):
+    global key_dic
+    del key_dic[key]
+
+def location(address,input_key = None):
+    global key_dic
+    if input_key is None:
+        key = _get_key()
+    else:
+        key = input_key
+
     url = f'https://restapi.amap.com/v3/geocode/geo?key={key}&address={address}'
     r = requests.get(url)
     j = r.json()
+    if j['info'] == 'DAILY_QUERY_OVER_LIMIT' and input_key is None:
+        _pop_key(key)
+        if len(key_dic) == 0:
+            raise CommonLocationOverLimitException("DAILY_QUERY_OVER_LIMIT")
+        else:
+            return None
+
+    elif j['info'] == 'DAILY_QUERY_OVER_LIMIT' and input_key is not None:
+        raise CommonLocationOverLimitException("DAILY_QUERY_OVER_LIMIT")
     return j
 
-def lnglat(address):
-    key = _get_key()
+def lnglat(address,input_key=None):
     try:
-        url = f'https://restapi.amap.com/v3/geocode/geo?key={key}&address={address}'
-        r = requests.get(url)
-        j = r.json()
-        location  = ''
-        location = [float(i)  for i in  str(j['geocodes'][0]['location']).split(",")]
-    except Exception as e:
-        location =None
-    return location 
+        j  = location(address,input_key=input_key)
+        ret  = ''
+        ret = [float(i)  for i in  str(j['geocodes'][0]['location']).split(",")]
+    except KeyError as e:
+        ret =None
+    except IndexError as e:
+        ret =None
+    except TypeError as e:
+        ret =None
+    
+    return ret 
 
 if __name__ == "__main__":
-    print(location('北京市昌平区马横路167号靠近横桥社区卫生服务站'))
+    try:
+        print(lnglat('北京市'))
+    except CommonLocationOverLimitException as e:
+        print(e)
+    print(key_dic)
+
+ 
