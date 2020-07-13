@@ -57,7 +57,7 @@ def _get_key():
         for i in key_list:
             key_dic[i] = 1
 
-    return  list(key_dic)[random.randint(0,len(key_list) -1)]
+    return  list(key_dic)[random.randint(0,len(key_dic) -1)]
 
 def _pop_key(key):
     global key_dic
