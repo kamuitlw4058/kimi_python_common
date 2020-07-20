@@ -2,3 +2,4 @@
 dist/*
 zmc_common.egg-info/*
 build/*
+*.pyc

@@ -14,6 +14,7 @@ class BaseClient(metaclass=abc.ABCMeta):
         engine = create_engine(engine_url)
         self.engine_url = engine_url
         self.engine = create_engine(engine_url)
+        self.protocol = engine_params['protocol']
 
     def get_engine(self):
         return self.engine
@@ -29,6 +30,11 @@ class BaseClient(metaclass=abc.ABCMeta):
 
     def to_sql(self,df,table,index=False,if_exists='append'):
         df.to_sql(table,self.engine,index=index,if_exists=if_exists)
+
+
+    @abc.abstractmethod
+    def show_table(self):
+        pass
 
     def close(self):
         self.engine.dispose()
