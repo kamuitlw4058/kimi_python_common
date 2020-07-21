@@ -5,7 +5,7 @@ from ..utils.logger import getLogger
 logger = getLogger(__name__)
 
 class CachedDictList():
-    def __init__(self,cache_keyword, cache_file_name='cache_dic',  cache_dir='.cache'):
+    def __init__(self,cache_keyword, cache_file_name='cache_dic.json',  cache_dir='.cache'):
         self.cache_dic = None
         self.cache_file_name = cache_file_name
         self.cache_dir = cache_dir
