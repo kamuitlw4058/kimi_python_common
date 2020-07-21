@@ -5,16 +5,17 @@ logger = getLogger(__name__)
 # Scrapy 内置的 Downloader Middleware 为 Scrapy 供了基础的功能，
 # 定义一个类，其中（object）可以不写，效果一样
 class ProxyMiddleware(object):
-    # 声明一个数组
-    #proxyList = ['http://218.75.158.153:3128','http://188.226.141.61:8080']
-    proxy_list = ProxyList()
+    def __init__(self):
+        # 声明一个数组
+        #proxyList = ['http://218.75.158.153:3128','http://188.226.141.61:8080']
+        self.proxy_list = ProxyList()
     
     # Downloader Middleware的核心方法，只有实现了其中一个或多个方法才算自定义了一个Downloader Middleware
     def process_request(self, request, spider):
         # 随机从其中选择一个，并去除左右两边空格
-        proxy = proxy_list.get_proxy()
+        proxy = self.proxy_list.get_proxy()
         host = proxy['host']
-        port = proxy['prot']
+        port = proxy['port']
         proxy_url = f'http://{host}:{port}'
         # 打印结果出来观察
         logger.info("this is request ip url:" + proxy_url)
@@ -37,6 +38,6 @@ class ProxyMiddleware(object):
             # # 设置新的代理ip内容
             # request.mete['proxy'] = proxy
             # return request
-            proxy_list.remove_proxy(host,port)
+            self.proxy_list.remove_proxy(host,port)
         return response
 
