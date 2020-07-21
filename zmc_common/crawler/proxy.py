@@ -7,7 +7,6 @@ logger = getLogger(__name__)
 class ProxyMiddleware(object):
     def __init__(self):
         # 声明一个数组
-        #proxyList = ['http://218.75.158.153:3128','http://188.226.141.61:8080']
         self.proxy_list = ProxyList()
     
     # Downloader Middleware的核心方法，只有实现了其中一个或多个方法才算自定义了一个Downloader Middleware
