@@ -11,6 +11,10 @@ class CachedDictList():
         self.cache_dir = cache_dir
         self.cache_path = f'{self.cache_dir}/{self.cache_file_name}'
         self.cache_keyword  = cache_keyword
+        self.load_cache()
+
+    def get_keys(self):
+        return list(self.cache_dic)
 
     def load_cache( self):
         logger.debug("location load cache... ")
@@ -41,7 +45,4 @@ class CachedDictList():
 
 
     def get(self,row_key):
-        if self.cache_dic is None:
-            self.load_cache()
-
         return self.cache_dic.get(row_key, None)
