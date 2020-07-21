@@ -1,4 +1,4 @@
-from zmc_common.database.client.postgres import PostgresClient
+from zmc_common.database.client.clients import clients
 
 
 if __name__ == "__main__":
@@ -11,6 +11,13 @@ if __name__ == "__main__":
     'charset': 'utf8',
     'protocol':'postgres'
     }
-    client = PostgresClient(**zmc_postgres_886_params)
+
+    dbs_dict = {
+        'default':zmc_postgres_886_params
+    }
+
+
+    clients.register(zmc_postgres_886_params)
+    client =clients.get_client()
     df = client.read_sql("select * from raw_taobao_order where to_date(to_char(order_create_time,'yyyy-mm-dd'),'yyyy-mm-dd') = '2020-06-18'")
     print(df)

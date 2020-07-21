@@ -4,17 +4,23 @@ from sqlalchemy import create_engine
 
 
 class BaseClient(metaclass=abc.ABCMeta):
-    def __init__(self,**kwargs):
+
+    @classmethod
+    def get_engine_url(cls,**kwargs):
         engine_params ={}
         for k,v in kwargs.items():
             if k in ['protocol','user','password','host','port','database']:
                 engine_params[k] = v
         
         engine_url = '{protocol}://{user}:{password}@{host}:{port}/{database}'.format(**engine_params)
+        return engine_url
+
+    def __init__(self,**kwargs):
+        engine_url = BaseClient.get_engine_url(**kwargs)
         engine = create_engine(engine_url)
         self.engine_url = engine_url
         self.engine = create_engine(engine_url)
-        self.protocol = engine_params['protocol']
+        self.protocol = kwargs['protocol']
 
     def get_engine(self):
         return self.engine
