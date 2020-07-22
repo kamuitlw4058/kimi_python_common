@@ -4,7 +4,7 @@ from ..utils.cache_dict_list import CachedDictList
 
 proxy_list = [
     {'host':'61.178.118.86','port':8080,'https':True,'post':True},
-    {'host':'103.45.104.83','port':3128,'https':True,'post':True},
+    #{'host':'103.45.104.83','port':3128,'https':True,'post':True},
     #{'host':'113.226.110.79','port':55317,'https':True,'post':True},
     #{'host':'183.220.145.3','port':8080,'https':True,'post':True},
    # {'host':'61.178.118.86','port':8080,'https':True,'post':True},

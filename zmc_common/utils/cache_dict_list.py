@@ -19,6 +19,8 @@ class CachedDictList():
     def load_cache( self):
         logger.debug("location load cache... ")
         self.cache_dic = {}
+        if not os.path.exists(self.cache_dir):
+            os.makedirs(self.cache_dir)
         if os.path.exists(self.cache_path):
             with open(f'{self.cache_dir}/{self.cache_file_name}', 'r') as f:
                 rows = f.readlines()
