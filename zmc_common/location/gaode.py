@@ -4,6 +4,7 @@ import os
 import json
 
 from ..utils.logger import getLogger
+from ..utils.cache_dict_list import CachedDictList
 
 logger = getLogger(__name__)
 
@@ -185,10 +186,54 @@ def lnglat(address, input_key=None):
 
     return ret
 
+class Location():
+    def __init__(self):
+        self.cached_dict = CachedDictList('gaode_location')
 
-if __name__ == "__main__":
-    try:
-        print(lnglat('北京市'))
-    except CommonLocationOverLimitException as e:
-        print(e)
-    print(key_dic)
+    def location(self,address, input_key=None, cache=True):
+
+        if input_key is None:
+            key = _get_key()
+        else:
+            key = input_key
+
+        ret = self.cached_dict.get(address)
+        if ret is None:
+            logger.debug(f'get {address} by gaode...')
+            url = f'https://restapi.amap.com/v3/geocode/geo?key={key}&address={address}'
+            r = requests.get(url)
+            j = r.json()
+            if j['info'] == 'DAILY_QUERY_OVER_LIMIT' and input_key is None:
+                _pop_key(key)
+                if len(key_dic) == 0:
+                    raise CommonLocationOverLimitException(
+                        "DAILY_QUERY_OVER_LIMIT")
+                else:
+                    return None
+
+            elif j['info'] == 'DAILY_QUERY_OVER_LIMIT' and input_key is not None:
+                raise CommonLocationOverLimitException("DAILY_QUERY_OVER_LIMIT")
+            j['api_key']= key
+            self.cached_dict.append_cache(address, j)
+            ret = j
+        else:
+            logger.debug(f'get {address} by cache...')
+
+        return ret
+
+    def lnglat(self,address, input_key=None):
+        try:
+            j = self.location(address, input_key=input_key)
+            ret = ''
+            #[longitude,latitude]
+            ret = [float(i) for i in str(j['geocodes'][0]['location']).split(",")]
+        except KeyError as e:
+            ret = None
+        except IndexError as e:
+            ret = None
+        except TypeError as e:
+            ret = None
+
+        return ret 
+
+
