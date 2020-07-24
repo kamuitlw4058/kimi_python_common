@@ -5,9 +5,12 @@ from ..utils.logger import getLogger
 logger = getLogger(__name__)
 
 class CachedDictList():
-    def __init__(self,cache_keyword, cache_file_name='cache_dic.json',  cache_dir='.cache'):
+    def __init__(self,cache_keyword, cache_file_name=None,  cache_dir='.cache'):
         self.cache_dic = None
-        self.cache_file_name = cache_file_name
+        if cache_file_name is not None:
+            self.cache_file_name = cache_file_name
+        else:
+            self.cache_file_name = f'{cache_keyword}.json'
         self.cache_dir = cache_dir
         self.cache_path = f'{self.cache_dir}/{self.cache_file_name}'
         self.cache_keyword  = cache_keyword

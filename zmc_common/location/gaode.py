@@ -51,6 +51,7 @@ def _load_cache(cache_dir):
 def _append_cache(address, dic, cache_dir):
     global cache_keyword
     global cache_file_name
+    global cache_dic
 
     try:
         dic[cache_keyword] = address
@@ -59,6 +60,7 @@ def _append_cache(address, dic, cache_dir):
     except Exception as e:
         logger.debug(e)
         pass
+    cache_dic[address] = dic
 
 
 def _get_by_cache(address, cache_dir):
@@ -172,6 +174,7 @@ def lnglat(address, input_key=None):
     try:
         j = location(address, input_key=input_key)
         ret = ''
+        #[longitude,latitude]
         ret = [float(i) for i in str(j['geocodes'][0]['location']).split(",")]
     except KeyError as e:
         ret = None
