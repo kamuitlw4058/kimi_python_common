@@ -32,7 +32,7 @@ class CachedDictList():
                         logger.debug(e)
                         pass
 
-    def append_cache(self,row_key, row_dic):
+    def append_cache(self,row_key, row_dic={}):
         if not isinstance(row_dic,dict):
             raise Exception(f'append cache need dic. real:{row_dic}!')
     
