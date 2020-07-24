@@ -12,7 +12,7 @@ key_list = [
     'a1e21b86523c040bec27410f8103de8c',  # 王岑晗
     '72107dc0ff737e02cd2d746727d401d7',  # 范静
     '000e0f6badb3dbc853b2cbb0ec16ad08',  # 范国金
-    'fba16c9c0b911b89c7390b867b9a8026',  # 宋佳敏
+    #'fba16c9c0b911b89c7390b867b9a8026',  # 宋佳敏
     'f912108a689c0cebf24e7fc064f0bc95',  # 唐宁
     'c847882933429710c15dfd698f0337d3',  # Mark
 ]
