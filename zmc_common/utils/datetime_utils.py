@@ -15,6 +15,8 @@ default_datetime_formats =  [
 ]
 
 def convert_cn_datetime(datetime_str):
+    datetime_str = str(datetime_str)
+    datetime_str = datetime_str.replace('年','-')
     datetime_str = datetime_str.replace('月','-')
     datetime_str = datetime_str.replace('日','')
     datetime_str = datetime_str.replace('周一','Mon')
@@ -26,19 +28,30 @@ def convert_cn_datetime(datetime_str):
     datetime_str = datetime_str.replace('周日','Sun')
     return datetime_str
 
-def infer_datetime(datetime_str,datetime_formats=default_datetime_formats,auto_year=True):
+def infer_datetime(datetime_str,datetime_formats=default_datetime_formats,auto_year=True,debug=False):
     datetime_str = convert_cn_datetime(datetime_str)
     for i in datetime_formats:
         try:
+            if debug:
+                print(f'try datetime_str:{datetime_str} format:{i} ')
             dt = datetime.strptime(datetime_str, i)
             if dt.year == 1900 and auto_year:
                 dt = dt.replace(datetime.now().year)
             return dt
         except ValueError as e:
-            print(e)
+            if debug:
+                print(f'datetime_str:{datetime_str} format:{i} error:{e}')
             pass
 
     return None
 
-def datetime_format(df,format='%Y-%m-%d %a %H:%M:%S'):
-    return datetime.strftime(df, format)
+def datetime_format(df,format_string='%Y-%m-%d %H:%M:%S',debug=False):
+    if isinstance(df,datetime):
+        return datetime.strftime(df, format_string)
+    elif isinstance(df,str):
+        df = infer_datetime(df,debug=debug)
+        if df is not None:
+            return datetime.strftime(df,format_string)
+        return None
+    else:
+        return None
