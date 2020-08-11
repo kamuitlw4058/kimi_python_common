@@ -35,12 +35,12 @@ class GraphqlClient:
         item_list.append(item_dict)
         self.cached_dict[table_name] = item_list
 
-    def insert(self,table_name,limit_size=0):
+    def insert(self,table_name,limit_size=0,on_conflict=False,update_columns='null'):
         item_list =  self.cached_dict.get(table_name,None)
         if item_list is not None and len(item_list) > limit_size:
             items= item_list.copy()
             self.cached_dict[table_name] = []
-            self.insert_items(table_name,items)
+            self.insert_items(table_name,items,on_conflict=on_conflict,update_columns=update_columns)
 
     def insert_items(self,table_name,items,on_conflict=False,update_columns='null'):
         item_name = f'{table_name}_insert_input'  #knowledge_weather_forecast_insert_input
