@@ -17,12 +17,30 @@ class GraphqlClient:
             transport=sample_transport,
             fetch_schema_from_transport=True,
         )
+
+        self.cached_dict = {}
+
+
     def _get_on_conflict(self,pkey_name,update_columns):
         s =  ', on_conflict:' + \
             '{' + \
             f'constraint: {pkey_name}, update_columns: {update_columns}'+ \
             '}' 
         return s
+
+    def append(self,table_name,item_dict):
+        item_list =  self.cached_dict.get(table_name,None)
+        if item_list is None:
+            item_list = []
+        item_list.append(item_dict)
+        self.cached_dict[table_name] = item_list
+
+    def insert(self,table_name,limit_size=0):
+        item_list =  self.cached_dict.get(table_name,None)
+        if item_list is not None and len(item_list) > limit_size:
+            items= item_list.copy()
+            self.cached_dict[table_name] = []
+            self.insert_items(table_name,items)
 
     def insert_items(self,table_name,items,on_conflict=False,update_columns='null'):
         item_name = f'{table_name}_insert_input'  #knowledge_weather_forecast_insert_input
