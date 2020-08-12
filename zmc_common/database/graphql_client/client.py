@@ -42,6 +42,11 @@ class GraphqlClient:
             self.cached_dict[table_name] = []
             self.insert_items(table_name,items,on_conflict=on_conflict,update_columns=update_columns)
 
+    def get(self,gql_str):
+        query = gql(gql_str)
+        return self.client.execute(query)
+
+
     def insert_items(self,table_name,items,on_conflict=False,update_columns='null'):
         item_name = f'{table_name}_insert_input'  #knowledge_weather_forecast_insert_input
         func_name = f'insert_{table_name}' #insert_knowledge_weather_forecast
