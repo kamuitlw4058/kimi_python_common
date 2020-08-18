@@ -1,6 +1,7 @@
 import abc
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.engine import reflection
 
 
 class BaseClient(metaclass=abc.ABCMeta):
@@ -21,6 +22,7 @@ class BaseClient(metaclass=abc.ABCMeta):
         self.engine_url = engine_url
         self.engine = create_engine(engine_url)
         self.protocol = kwargs['protocol']
+        self.insp = None
 
     def get_engine(self):
         return self.engine
@@ -38,9 +40,10 @@ class BaseClient(metaclass=abc.ABCMeta):
         df.to_sql(table,self.engine,index=index,if_exists=if_exists)
 
 
-    @abc.abstractmethod
-    def show_table(self):
-        pass
+    def tables(self):
+        if self.insp is None:
+            insp = reflection.Inspector.from_engine(self.engine)
+        return insp.get_table_names()
 
     def close(self):
         self.engine.dispose()

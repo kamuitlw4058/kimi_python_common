@@ -1,6 +1,6 @@
 
-from .postgres import PostgresClient
 from .base import BaseClient
+
 class Clients:
     def __init__(self, clients_params={}):
         self.clients_params = clients_params
@@ -13,12 +13,13 @@ class Clients:
 
         self.clients_params[client_params_key] = client_params
         engine_url = BaseClient.get_engine_url(**client_params)
+        
         if str(protocol).lower() == 'postgres':
             client = PostgresClient(**client_params)
             self.clients[engine_url] = client
 
 
-    def get_client(self, client_params_key='default',client_params=None):
+    def get_client(self, client_params_key='default',client_params=None) -> BaseClient:
         client = None
 
         if client_params is not None:
@@ -32,10 +33,9 @@ class Clients:
 
         client = self.clients.get(client_key,None)
         if client is None:
-            protocol =  clients_params['protocol']
-            if str(protocol).lower() == 'postgres':
-                client = PostgresClient(**clients_params)
-                self.clients[client_params_key] = client
+            protocol =  client_params['protocol']
+            client = BaseClient(**client_params)
+            self.clients[client_params_key] = client
 
         return client
 

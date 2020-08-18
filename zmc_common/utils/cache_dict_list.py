@@ -51,3 +51,6 @@ class CachedDictList():
 
     def get(self,row_key):
         return self.cache_dic.get(row_key, None)
+        
+    def get_dict(self):
+            return self.cache_dic
