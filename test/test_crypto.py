@@ -1,21 +1,24 @@
+
+import time
+import requests
+
 from zmc_common.crypto.base import Crypto
 from zmc_common.utils.url_utils import dict2url
 
 
 if __name__ == '__main__':
-    d = {
-        'fields':'air_daily',
-        'public_key':'YOUR_PUBLIC_KEY',
-        'ts':1562165673,
-        'ttl':'300',
-        'locations':'39:118'
-    }
-    #s=sorted(d.items(),key=lambda x:x[0])
-    #print(s)
-    c = dict2url(d,sort_by_key=True,override_ts=False)
-    print(c)
-    #c = 'fields=air_daily&locations=39:118&public_key=YOUR_PUBLIC_KEY&ts=1562165673&ttl=300'
 
-    #print(hash_hmac( , 'YOUR_PRIVATE_KEY',sha1))
-    crypto = Crypto(private_key='YOUR_PRIVATE_KEY')
-    print(crypto.hmac(c))
+
+    public_key = 'PSCzqP5LrvLcTR2wu'
+    private_key = 'SI1CUL2GLasinAPHz'
+    d = {
+        'fields':'weather_hourly_1h',
+        'public_key':public_key,
+        'locations':'29.5617:120.0962'
+    }
+    crypto = Crypto(private_key=private_key,public_key=public_key)
+    print(crypto.url_hmac(d))
+    params =crypto.url_hmac(d)
+    response = requests.get('https://api.seniverse.com/v4?' + params)
+    print(response.json())
+
