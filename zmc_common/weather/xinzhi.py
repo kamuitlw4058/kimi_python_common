@@ -1,6 +1,7 @@
 import requests
 import scrapy
 import jsonpath
+import pandas as pd
 
 from ..utils.logger import getLogger
 from ..crypto.base import Crypto
@@ -26,7 +27,9 @@ class WeatherItem(scrapy.Item):
     district = scrapy.Field()
     city_short = scrapy.Field()
     district_short = scrapy.Field()
+    city_district_short = scrapy.Field()
     
+    code = scrapy.Field()
     relative_humidity = scrapy.Field()
     pressure = scrapy.Field()
     wind_scale = scrapy.Field()
@@ -79,6 +82,7 @@ class WeatherApi():
         else:
             self.location_mapper = location_mapper
         self.location_utils = Location()
+        self.v3_city_location_table_df = None
 
     api_type_mapper ={
         'now':('https://api.seniverse.com/v3/weather/station/now.json',None,lambda fields,public_key,private_key,query_location,crypto:f'key={private_key}&location={query_location}&language=zh-Hans&unit=c'),
@@ -87,6 +91,18 @@ class WeatherApi():
         'extended':('https://api.seniverse.com/v3/pro/weather/grid/extended.json',None,lambda fields,public_key,private_key,query_location,crypto:f'key={private_key}&location={query_location}'),
         'alarms':('https://api.seniverse.com/v3/weather/alarm.json',None,lambda fields,public_key,private_key,query_location,crypto:f'key={private_key}'),
     }
+
+    def load_v3_city_location(self,path,sheet_name='城市&经纬度 映射表'):
+        df = pd.read_excel(path,sheet_name=sheet_name)
+        self.v3_city_location_table_df = df
+        df = df[['Prov','City','District','lat','lng','Starbucks']]
+        df = df[df['Starbucks'] == 'Y']
+        city_list =  df.to_dict("records")
+        logger.info(len(city_list))
+        logger.info(df.groupby(['Starbucks']).count())
+        return  city_list
+        
+
 
     
     def get_location(self,location,location_mapper=None):
@@ -123,6 +139,7 @@ class WeatherApi():
         request.meta['api_type'] = api_type
         return request
     
+    
     #{'results': [{'location': {'id': 'CN-310101', 'name': '黄浦区', 'country': 'CN', 'path': '黄浦区,上海市,中国', 'timezone': 'Asia/Shanghai', 'timezone_offset': '+08:00'}, 
     # 'data': {'code': '13', 'humidity': '84', 'precip': '0.5', 'pressure': '1002.7', 'temperature': '27', 'time': '2020-08-10T17:00:00+08:00', 'visibility': '5.9', 'wind_direction': '东', 'wind_direction_degree': '102', 'wind_scale': '1', 'wind_speed': '3.96', 'text': '小雨'},
     #  'last_update': '2020-08-10T17:17:34+08:00'}]}
@@ -132,30 +149,7 @@ class WeatherApi():
         ret = response.json()
         return  ret
     
-    # {'location': 
-    #   {'id': 'CN-511112', 'name': '五通桥区', 'country': 'CN', 'path': '五通桥区,乐山市,四川省,中国', 'timezone': 'Asia/Shanghai', 'timezone_offset': '+08:00'},
-    # 'data': {'code': '0', 'humidity': '58', 'precip': '0.0', 'pressure': '962.2',
-    #  'temperature': '25', 'time': '2020-08-18T16:00:00+08:00', 'visibility': '30.0',
-    #  'wind_direction': '南', 'wind_direction_degree': '166',
-    #  'wind_scale': '2', 'wind_speed': '7.92', 'text': '晴'}, 
-    # 'last_update': '2020-08-18T16:10:25+08:00'}
-    def parse_data_meta(self,meta):
-        item =  WeatherItem()
-        mate_mapper_dict = {
-            'province':'prov',
-            'city':'city',
-            'district':'district',
-            'city_short':'city_short',
-            'district_short':'district_short',
-            'schedule_datetime':'schedule_datetime'
-        }
-        for k,v in mate_mapper_dict.items():
-            item[k] = meta[v]
 
-        lnglat = self.location_utils.lnglat(meta['prov'] + meta['city'] + meta['district'])
-        item['lng']  = lnglat[0]
-        item['lat']  = lnglat[1]
-        return item
     
     #1000	 晴	0	晴
     #         1	晴
@@ -249,6 +243,33 @@ class WeatherApi():
             '9020':'冰雹',
         }
         return mapper_dict.get(v4_code,'')
+
+    # {'location': 
+    #   {'id': 'CN-511112', 'name': '五通桥区', 'country': 'CN', 'path': '五通桥区,乐山市,四川省,中国', 'timezone': 'Asia/Shanghai', 'timezone_offset': '+08:00'},
+    # 'data': {'code': '0', 'humidity': '58', 'precip': '0.0', 'pressure': '962.2',
+    #  'temperature': '25', 'time': '2020-08-18T16:00:00+08:00', 'visibility': '30.0',
+    #  'wind_direction': '南', 'wind_direction_degree': '166',
+    #  'wind_scale': '2', 'wind_speed': '7.92', 'text': '晴'}, 
+    # 'last_update': '2020-08-18T16:10:25+08:00'}
+    def parse_data_meta(self,meta):
+        item =  WeatherItem()
+        mate_mapper_dict = {
+            'province':'prov',
+            'city':'city',
+            'district':'district',
+            'city_short':'city_short',
+            'district_short':'district_short',
+            'schedule_datetime':'schedule_datetime'
+        }
+        for k,v in mate_mapper_dict.items():
+            item[k] = meta[v]
+
+        item['city_district_short'] = item['city_short']+ item['district_short']
+
+        lnglat = self.location_utils.lnglat(meta['prov'] + meta['city'] + meta['district'])
+        item['lng']  = lnglat[0]
+        item['lat']  = lnglat[1]
+        return item
         
 
     def parse_data_now(self,item_dict,meta):
@@ -301,6 +322,8 @@ class WeatherApi():
         return wind_direction_index[wind_direction_index_value]
 
        
+
+
     # {'weather_hourly_1h': [
     # {'time_updated': '2020-08-18T06:23:40+08:00', 
     # 'location': {'query': '29.5617:120.0962'}, 
@@ -309,29 +332,55 @@ class WeatherApi():
     # 'rhu': 73.9, 'ssrd': 0.16, 'tem': 29, 'time': '2020-08-18T08:00:00+08:00', 
     # 'uvb': 0.02, 'vis': 24.13, 'wep': 1000, 'wnd': 161, 'wns': 0.2, 'wns_grd': 0}
     # ]}
-    def parse_data_hourly(self,item_dict,meta):
-        item = self.parse_data_meta(meta)
+
+    def parse_data_hourly_base(self,item_dict,meta):
+        item =  WeatherItem()
+        mate_mapper_dict = {
+            'province':'province',
+            'city':'city',
+            'district':'district',
+            'city_short':'city_short',
+            'district_short':'district_short',
+            'schedule_datetime':'schedule_datetime',
+            'api_type':'api_type'
+        }
+        for k,v in mate_mapper_dict.items():
+            item[k] = meta[v]
+
+        item['city_district_short'] = item['city_short']+ item['district_short']
+        item['update_time']=item_dict['time_updated']
+
+        lnglat = self.location_utils.lnglat(item['province'] + item['city'] + item['district'])
+        item['lng']  = lnglat[0]
+        item['lat']  = lnglat[1]
+        return item
+
+    def parse_data_hourly(self,item,item_dict):
         mapper_dict ={
-            'time':'$.data.time',
-            'relative_humidity':'$.data.rhu',
-            'pressure':'$.data.prs_qfe',
-            'wind_scale':'$.data.wns_grd',
-            'wind_direction':'$.data.wnd',
-            'temperature':'$.data.temperature',
-            'rainfall':'$.data.pre',
-            'visibility':'$.data.vis',
-            'wind_speed':'$.data.wns',
-            'update_time':'$.time_updated',
-            'code':'$.data.wep',
+            'time':'$.time',
+            'relative_humidity':'$.rhu',
+            'pressure':'$.prs_qfe',
+            'wind_scale':'$.wns_grd',
+            'wind_direction':'$.wnd',
+            'temperature':'$.tem',
+            'rainfall':'$.pre',
+            'visibility':'$.vis',
+            'wind_speed':'$.wns',
+            'code':'$.wep',
         }
 
-        for k,v in mapper_dict.items():
-            item[k] = jsonpath.jsonpath(item_dict,v)[0]
+        try:
+            for k,v in mapper_dict.items():
+                r = jsonpath.jsonpath(item_dict,v)
+                logger.debug(f'k:{k} v:{v} r:{r}')
+                item[k] = str(jsonpath.jsonpath(item_dict,v)[0])
+        except Exception as e:
+            logger.warn(f'item_dict:{item_dict},item:{item} message:{e}')
 
         item['time'] = item['time'].replace('T',' ')[:19]
         item['wind_direction_cn'] = self.parse_wind_direction(item['wind_direction'])
         item['weather'] = self.weather_code_v4_text(item['code'])
-        item['update_time'] = self.item['update_time'].replace('T',' ')[:19]
+        item['update_time'] = item['update_time'].replace('T',' ')[:19]
         item['orig'] = item_dict
 
         return item
@@ -367,6 +416,7 @@ class WeatherApi():
         item['city_short'] = city_short
         item['district_short'] = district_short
         item['district'] = district_short
+        item['city_district_short'] = item['city_short']+ item['district_short']
         item['schedule_datetime'] = meta['schedule_datetime']
         return item
 
