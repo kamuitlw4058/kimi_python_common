@@ -35,10 +35,17 @@ class GraphqlClient:
         item_list.append(item_dict)
         self.cached_dict[table_name] = item_list
 
-    def insert(self,table_name,limit_size=0,on_conflict=False,update_columns='null'):
+    def insert(self,table_name,limit_size=0,on_conflict=False,update_columns='null',conflict_col=None):
         item_list =  self.cached_dict.get(table_name,None)
         if item_list is not None and len(item_list) > limit_size:
             items= item_list.copy()
+            if conflict_col is not None:
+                output_dict = {}
+                for i in items:
+                    conflict_key = [i[c]  for c in conflict_col]
+                    conflict_key = '_'.join(conflict_key)
+                    output_dict[conflict_key] = i
+                items = list(output_dict.values())
             self.cached_dict[table_name] = []
             self.insert_items(table_name,items,on_conflict=on_conflict,update_columns=update_columns)
 

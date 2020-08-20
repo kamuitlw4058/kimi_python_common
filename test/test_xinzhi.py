@@ -13,9 +13,12 @@ if __name__ == "__main__":
 
     # city_list = weather_client.load_v3_city_location('data/weather/心知_城市&经纬度 映射表-Zamplus Updated_20200819.xlsx')
     # print(city_list[0])
+    lat = '42.50704'
+    lng = '123.41672'
 
 
-    ret = weather_client.requests_get('39.90499:116.40529',api_type='hourly')
+    ret = weather_client.requests_get(f'{lat}:{lng}',api_type='hourly')
+    
     print(ret)
 
     #心知_城市&经纬度 映射表-Zamplus Updated_20200819.xlsx
