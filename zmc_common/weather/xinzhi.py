@@ -57,12 +57,14 @@ class WeatherAlarmItem(scrapy.Item):
     district = scrapy.Field()
     city_short = scrapy.Field()
     district_short = scrapy.Field()
+    city_district_short = scrapy.Field()
     lng = scrapy.Field()
     lat = scrapy.Field()
     
     title = scrapy.Field() 
     level = scrapy.Field()
     status = scrapy.Field()
+    alarm_type = scrapy.Field()
     description = scrapy.Field()
 
     time = scrapy.Field()
@@ -420,11 +422,11 @@ class WeatherApi():
         item['schedule_datetime'] = meta['schedule_datetime']
         return item
 
-    def parse_data_alarm(self,item,alarm_dict,meta):
+    def parse_data_alarm(self,item,alarm_dict):
         mapper_dict ={
             'time':'$.pub_date',
             'title':'$.title',
-            'type':'$.type',
+            'alarm_type':'$.type',
             'level':'$.level',
             'status':'$.status',
             'description':'$.description',
