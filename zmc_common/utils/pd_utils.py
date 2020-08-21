@@ -1,4 +1,7 @@
 
+import json
+import numpy as np
+
 from .logger import getLogger
 logger = getLogger(__name__)
 
@@ -12,3 +15,122 @@ def get_col_duplicated(df,col):
     duplicated_list = df[df.duplicated(col)][col].unique()
     is_duplicated = df.apply(_dup(col,duplicated_list),axis=1)
     return df[is_duplicated]
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NpEncoder, self).default(obj)
+
+
+class PandasStatics():
+    def __init__(self,df,table_name=None):
+        super().__init__()
+        self.df = df 
+        self.table_name = table_name
+    
+    def statics(self):
+        df = self.df
+        null_count = df.isna().sum().sum()
+        rows_count = len(df)
+        columns_count = len(df.columns)
+        miss_rate = null_count / (rows_count * columns_count )
+        ret ={
+            'rows_count':rows_count,
+            'columns_count':columns_count,
+            'miss_rate':miss_rate,
+        }
+        return ret
+    
+    def missing_values(self):
+        df = self.df
+        columns = df.columns
+        rows_count = len(df)
+        df_na_sum = df.isna().sum()
+        ret = {}
+        for i in columns:
+            miss_count = df_na_sum[i]
+            col_dict = {
+                'miss_count':miss_count,
+                'rate': miss_count / rows_count,
+                'total_count':rows_count
+            }
+            ret[i] = col_dict
+        return  ret
+    def variables_str(self,df):
+        distribution = {}
+        vc = df.value_counts()
+        for i in list(vc.index):
+            if not isinstance(i,dict):
+                distribution[i]= {
+                    'count' : vc[i],
+                    'rate' : vc[i] / len(df),
+                }
+        return {
+            'distribution':distribution
+        }
+
+    def variables_number(self,df):
+        distribution = {}
+        vc = df.value_counts()
+        for i in list(vc.index):
+            distribution[i]= {
+                'count' : vc[i],
+                'rate' : vc[i] / len(df),
+            }
+        statics =  dict(df.describe())
+        return {
+            'distribution':distribution,
+            'statics':dict(statics)
+        }
+    
+    def variables_datetime(self,df):
+        distribution = {}
+        date =  df.dt.date
+        vc = date.value_counts()
+        for i in list(vc.index):
+            distribution[str(i)]= {
+                'count' : vc[i],
+                'rate' : vc[i] / len(df),
+            }
+        ret = {
+            'distribution':distribution,
+        }
+        return ret
+
+    def variables(self):
+        df = self.df
+        ret = {}
+        cols = df.columns
+        for col in cols:
+            dtype = str(df[col].dtype)
+            col_dict ={
+                'dtype':dtype,
+            }
+            if dtype == "object":
+                col_dict['string'] = self.variables_str(df[col])
+            if dtype.startswith("float") or dtype.startswith("int"):
+                col_dict['number'] = self.variables_number(df[col])
+            if dtype.startswith("datetime"):
+                col_dict['datetime'] = self.variables_datetime(df[col])
+            ret[col] = col_dict
+        return ret
+        
+
+    def to_json(self):
+        df = self.df 
+        ret ={
+            'statics': self.statics(),
+            'missing_values':self.missing_values(),
+            'variables':self.variables()
+        }
+        return json.loads(json.dumps(ret,ensure_ascii=False,indent=4,cls=NpEncoder))
+
+
+

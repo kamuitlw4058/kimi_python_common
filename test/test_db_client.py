@@ -26,9 +26,29 @@ if __name__ == "__main__":
     table_list = client.tables()
     print(client.tables())
 
+    df = client.read_sql('select * from inner_qr_code limit 100')
+    print(df.dtypes)
+    null_count = df.isna().sum().sum()
+    rows_count = len(df)
+    columns_count = len(df.columns)
+    miss_rate = null_count / (rows_count * columns_count )
+    print(null_count)
+    print(rows_count)
+    print(columns_count)
+    print(miss_rate)
 
-    pd_report =  pandas_profiling.ProfileReport(client.read_sql('select * from inner_qr_code') )
-    j = pd_report.to_json()
-    with open('report.json','w') as f:
-        f.write(json.dumps(j,ensure_ascii=False))
+
+
+    pd_report =  pandas_profiling.ProfileReport(df)
+    print(repr(pd_report.report.content['body'].content['items']))
+    print(repr(pd_report.report.content['body'].content['items'][0].content['items']))
+    # print(repr(pd_report.report.content['body'].content['items'][0].content['items'][0]['items'].content.keys()))
+    # print(repr(pd_report.report.content['body'].content['items'][1].content['items'][0]['items'].content.keys()))
+    # print(repr(pd_report.report.content['body'].content['items'][1].content['items'][0].keys()))
+    # print(repr(pd_report.report.content['body'].content['items'][3].content['items']))
+
+
+    # j = pd_report.to_json()
+    # with open('report.json','w') as f:
+    #     f.write(json.dumps(j,ensure_ascii=False))
 
