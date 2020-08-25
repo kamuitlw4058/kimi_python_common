@@ -38,11 +38,11 @@ if __name__ == "__main__":
     metadata.create_all(engine)
 
     table_list = client.tables()
-    table_result = []
+    
     for i in table_list:
         print(f'start table:{i} ...')
         df = client.read_sql(f'select * from {i}')
-
+        table_result = []
         print(df.dtypes)
         ps = PandasStatics(df)
         table_result.append(
@@ -53,9 +53,8 @@ if __name__ == "__main__":
                 'schedule_datetime':start_datetime
             }
         )
-
-    output_df = pd.DataFrame(table_result)
-    client.to_sql(output_df,'inner_table_statics')
+        output_df = pd.DataFrame(table_result)
+        client.to_sql(output_df,'inner_table_statics')
 
 
     

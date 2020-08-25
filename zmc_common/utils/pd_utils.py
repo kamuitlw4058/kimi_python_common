@@ -1,6 +1,7 @@
 
 import json
 import numpy as np
+from datetime import datetime
 
 from .logger import getLogger
 logger = getLogger(__name__)
@@ -41,11 +42,18 @@ class PandasStatics():
         rows_count = len(df)
         columns_count = len(df.columns)
         miss_rate = null_count / (rows_count * columns_count )
-        ret ={
-            'rows_count':rows_count,
+        if rows_count == 0:
+            ret ={
+            'rows_count':0, 
             'columns_count':columns_count,
-            'miss_rate':miss_rate,
+            'miss_rate':0,
         }
+        else:
+            ret ={
+                'rows_count':rows_count, 
+                'columns_count':columns_count,
+                'miss_rate':miss_rate,
+            }
         return ret
     
     def missing_values(self):
@@ -56,11 +64,18 @@ class PandasStatics():
         ret = {}
         for i in columns:
             miss_count = df_na_sum[i]
-            col_dict = {
-                'miss_count':miss_count,
-                'rate': miss_count / rows_count,
-                'total_count':rows_count
+            if rows_count == 0:
+                col_dict = {
+                'miss_count':0,
+                'rate': 0,
+                'total_count':0
             }
+            else:
+                col_dict = {
+                    'miss_count':miss_count,
+                    'rate': miss_count / rows_count,
+                    'total_count':rows_count
+                }
             ret[i] = col_dict
         return  ret
     def variables_str(self,df):
@@ -68,7 +83,7 @@ class PandasStatics():
         vc = df.value_counts()
         for i in list(vc.index):
             if not isinstance(i,dict):
-                distribution[i]= {
+                distribution[str(i)]= {
                     'count' : vc[i],
                     'rate' : vc[i] / len(df),
                 }
@@ -80,7 +95,7 @@ class PandasStatics():
         distribution = {}
         vc = df.value_counts()
         for i in list(vc.index):
-            distribution[i]= {
+            distribution[str(i)]= {
                 'count' : vc[i],
                 'rate' : vc[i] / len(df),
             }
@@ -95,6 +110,8 @@ class PandasStatics():
         date =  df.dt.date
         vc = date.value_counts()
         for i in list(vc.index):
+            if isinstance(i,datetime):
+                i = datetime.strftime('%Y-%m-%d %H:%M:%S')
             distribution[str(i)]= {
                 'count' : vc[i],
                 'rate' : vc[i] / len(df),
