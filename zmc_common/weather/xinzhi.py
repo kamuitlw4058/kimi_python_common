@@ -437,7 +437,76 @@ class WeatherApi():
         item['orig'] =  alarm_dict
         return item
 
-    
+    def parse_data_extended_base(self,item_dict,meta):
+        item =  {}
+        mate_mapper_dict = {
+            'province':'province',
+            'city':'city',
+            'district':'district',
+            'city_short':'city_short',
+            'district_short':'district_short',
+            'schedule_datetime':'schedule_datetime',
+            'api_type':'api_type'
+        }
+        for k,v in mate_mapper_dict.items():
+            item[k] = meta[v]
+
+        item['city_district_short'] = item['city_short']+ item['district_short']
+        item['update_time']=item_dict['last_update']
+
+        lnglat = self.location_utils.lnglat(item['province'] + item['city'] + item['district'])
+        item['lng']  = lnglat[0]
+        item['lat']  = lnglat[1]
+        return item
+
+
+    #{
+    #   date: "2019-11-13",
+    #   avg: "3.46",
+    #   high: "11.22",
+    #   low: "-2.35",
+    #   wind_speed: "9.41",
+    #   wind_direction_degree: "229",
+    #   wind_direction: "西南",
+    #   precip: "0.00",
+    #   clouds: "0.00",
+    #   code: "0",
+    #   text: "晴"
+    # },
+
+    def parse_data_extended(self,item,item_dict):
+        mapper_dict ={
+            'date':'$.date',
+            'avg':'$.avg',
+            'high':'$.high',
+            'low':'$.low',
+            'wind_direction':'$.wind_direction_degree',
+            'wind_direction_cn':'$.wind_direction',
+            'precip':'$.precip',
+            'clouds':'$.clouds',
+            'wind_speed':'$.wind_speed',
+            'code':'$.code',
+            'weather':'$.text',
+            'relative_humidity':'$.humidity',
+            'pressure':'$.pressure',
+            'wind_scale':'$.wind_scale',
+            'wind_speed':'$.wind_speed',
+        }
+
+        try:
+            for k,v in mapper_dict.items():
+                r = jsonpath.jsonpath(item_dict,v)
+                logger.debug(f'k:{k} v:{v} r:{r}')
+                item[k] = str(jsonpath.jsonpath(item_dict,v)[0])
+        except Exception as e:
+            logger.warn(f'item_dict:{item_dict},item:{item} message:{e}')
+
+        item['code'] = self.weather_code_v3_v4_mapper(item['code'])
+        item['orig'] = item_dict
+
+        return item
+
+
     def get_now(self,location):
         data_dict = self.requests_get(location,api_type='now')
         logger.debug(data_dict)
