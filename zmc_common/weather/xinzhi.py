@@ -98,15 +98,9 @@ class WeatherApi():
         df = pd.read_excel(path,sheet_name=sheet_name)
         self.v3_city_location_table_df = df
         df = df[['Prov','City','District','lat','lng','Starbucks']]
-        df = df[df['Starbucks'] == 'Y']
         city_list =  df.to_dict("records")
-        logger.info(len(city_list))
-        logger.info(df.groupby(['Starbucks']).count())
         return  city_list
         
-
-
-    
     def get_location(self,location,location_mapper=None):
         if location_mapper is None:
             location_mapper = self.location_mapper
