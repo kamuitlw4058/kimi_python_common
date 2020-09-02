@@ -495,6 +495,7 @@ class WeatherApi():
         except Exception as e:
             logger.warn(f'item_dict:{item_dict},item:{item} message:{e}')
 
+        item['wind_speed'] = str(round((float(item['wind_speed'])/3.6),2))
         item['code'] = self.weather_code_v3_v4_mapper(item['code'])
         item['orig'] = item_dict
 
