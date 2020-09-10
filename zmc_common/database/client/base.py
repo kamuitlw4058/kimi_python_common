@@ -27,8 +27,12 @@ class BaseClient(metaclass=abc.ABCMeta):
     def get_engine(self):
         return self.engine
 
-    def read_sql(self, sql, **kwargs):
-        return pd.read_sql(sql, self.engine)
+    def read_sql(self, sql,cache_pickle_path=None,use_cache=True, **kwargs):
+        if use_cache and cache_pickle_path is not None:
+            df =  pd.read_pickle(cache_pickle_path)
+        else:
+            df = pd.read_sql(sql, self.engine)
+        return df
 
     def exec_sql(self, sql):
         cursor = self.engine.cursor()
