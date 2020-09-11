@@ -2,7 +2,7 @@
 from distutils.core import setup
 import setuptools
 
-setup(name='zmc_common',
+setup(name='kimi_common',
     version='0.1',
     packages=setuptools.find_packages(),
 )
