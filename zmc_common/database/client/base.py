@@ -1,4 +1,5 @@
 import abc
+import os
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.engine import reflection
@@ -28,7 +29,7 @@ class BaseClient(metaclass=abc.ABCMeta):
         return self.engine
 
     def read_sql(self, sql,cache_pickle_path=None,use_cache=True, **kwargs):
-        if use_cache and cache_pickle_path is not None:
+        if use_cache and cache_pickle_path is not None and os.path.exists(cache_pickle_path):
             df =  pd.read_pickle(cache_pickle_path)
         else:
             df = pd.read_sql(sql, self.engine)
