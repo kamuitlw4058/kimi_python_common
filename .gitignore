@@ -1,5 +1,6 @@
 *.json
 dist/*
-zmc_common.egg-info/*
+
 build/*
 *.pyc
+kimi_common.egg-info/

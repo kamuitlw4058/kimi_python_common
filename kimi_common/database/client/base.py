@@ -19,20 +19,26 @@ class BaseClient(metaclass=abc.ABCMeta):
 
     def __init__(self,**kwargs):
         engine_url = BaseClient.get_engine_url(**kwargs)
-        engine = create_engine(engine_url)
         self.engine_url = engine_url
-        self.engine = create_engine(engine_url)
+        charset =kwargs.get('charset',None)
+        protocol =kwargs.get('protocol',None)
+        if charset is not None:
+            self.engine = create_engine(engine_url,encoding=charset)
+        else:
+            self.engine = create_engine(engine_url)
         self.protocol = kwargs['protocol']
         self.insp = None
 
     def get_engine(self):
         return self.engine
 
-    def read_sql(self, sql,cache_pickle_path=None,use_cache=True, **kwargs):
+    def read_sql(self, sql,cache_pickle_path=None,use_cache=True,cache_file=True, **kwargs):
         if use_cache and cache_pickle_path is not None and os.path.exists(cache_pickle_path):
             df =  pd.read_pickle(cache_pickle_path)
         else:
             df = pd.read_sql(sql, self.engine)
+            if cache_file and cache_pickle_path is not None:
+                df.to_pickle(cache_pickle_path)
         return df
 
     def exec_sql(self, sql):
