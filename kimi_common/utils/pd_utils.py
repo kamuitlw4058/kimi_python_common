@@ -18,6 +18,37 @@ def get_col_duplicated(df,col):
     return df[is_duplicated]
 
 
+def apply_if_col_not_exists(df,col_name,apply_func,overwrite=False):
+    if col_name in df.columns and not overwrite:
+        return df
+    df[col_name] = df.apply(apply_func,axis=1)
+    return df
+
+def simple_group_agg(df,col,label_col='label',agg_funcs=['count','mean'],by='count'):
+    if isinstance(col,str):
+        col = [col]
+    if isinstance(agg_funcs,dict):
+        grouped_label = df.groupby(col)
+        grouped_df = grouped_label.agg(**agg_funcs)
+    else:
+        grouped_label = df.groupby(col)[label_col]
+        grouped_df = grouped_label.agg(agg_funcs)
+    columns = {}
+  
+
+    if by is not None:
+        ret = grouped_df.sort_values(by=by,ascending=False)
+    else:
+        ret = grouped_df.sort_index()
+    
+    for func_name in  agg_funcs:
+        if isinstance(col,list):
+            col = '_'.join(col)
+        columns[func_name] = f'{col}_{label_col}_{func_name}'
+    ret = ret.rename(columns=columns)
+    return ret 
+
+
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
