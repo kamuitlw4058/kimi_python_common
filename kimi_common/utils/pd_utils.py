@@ -11,20 +11,19 @@ def _dup(col,duplicated_list):
         return df[col] in duplicated_list
     return is_dup
             
-
 def get_col_duplicated(df,col):
     duplicated_list = df[df.duplicated(col)][col].unique()
     is_duplicated = df.apply(_dup(col,duplicated_list),axis=1)
     return df[is_duplicated]
 
 
-def apply_if_col_not_exists(df,col_name,apply_func,overwrite=False):
+def apply_col(df,col_name,apply_func,overwrite=False):
     if col_name in df.columns and not overwrite:
         return df
     df[col_name] = df.apply(apply_func,axis=1)
     return df
 
-def simple_group_agg(df,col,label_col='label',agg_funcs=['count','mean'],by='count'):
+def group_agg(df,col,label_col='label',agg_funcs=['count','mean'],by='count'):
     if isinstance(col,str):
         col = [col]
     if isinstance(agg_funcs,dict):
