@@ -16,6 +16,13 @@ class RedisClient():
             pipe.get(i)
         ret = pipe.execute()
         return zip(k_list,ret)
+    
+    def batch_set(self,k_list,v_list,transaction=False):
+        pipe = self.redis.pipeline(transaction=transaction)
+        for k,v in zip(k_list,v_list):
+            pipe.set(k,v)
+        ret = pipe.execute()
+        return zip(k_list,ret)
 
     # r.set('name', 'runoob')  # 设置 name 对应的值
     # print(r['name'])

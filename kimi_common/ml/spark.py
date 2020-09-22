@@ -1,5 +1,7 @@
 import time
 import pandas as pd
+from multiprocessing import Pool
+
 from sklearn.utils import shuffle as shuffle
 
 from pyspark.ml import Pipeline,PipelineModel
@@ -7,10 +9,9 @@ from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.feature import HashingTF, Tokenizer, RegexTokenizer,StringIndexer,VectorIndexer, StandardScaler,VectorAssembler,OneHotEncoder
 from pyspark.mllib.evaluation import BinaryClassificationMetrics
 from pyspark.sql.types import DoubleType, IntegerType
+from pyspark.sql import SparkSession
 
-
-
-from  pyspark.sql import SparkSession
+from ..utils.processing_utils import ProcessingPool
 
 class SparkBinaryClassificationTrainer():
     def __init__(self):
@@ -55,12 +56,11 @@ class SparkBinaryClassificationTrainer():
         return [si,oh],onehot_col
     
     def all_cate_features(self,cate_features):
-        cate_pipline = []
 
         cat_string_index_cols = [f'{i}_index'  for i in  cate_features]
         cate_onehot_output_cols = [f'{i}_onehot_vec'  for i in  cate_features]
         si = StringIndexer(inputCols=cate_features,outputCols=cat_string_index_cols,handleInvalid='keep')
-        oh = OneHotEncoder(inputCol=cat_string_index_cols,outputCol=cate_onehot_output_cols,handleInvalid='keep')
+        oh = OneHotEncoder(inputCols=cat_string_index_cols,outputCols=cate_onehot_output_cols,handleInvalid='keep')
         return [si,oh],cate_onehot_output_cols
         
 
@@ -86,18 +86,55 @@ class SparkBinaryClassificationTrainer():
             outputCol="features")
         lr = LogisticRegression(maxIter=10, regParam=0.001)
 
-        pipeline = Pipeline(stages=  cate_pipline + [number_assembler , scaler , assembler,lr])
+        features_pipeline = Pipeline(stages=  cate_pipline + [number_assembler , scaler , assembler])
 
-        model = pipeline.fit(training)
-        model.write().overwrite().save("model/spark-logistic-regression-model")
 
-        lrmodel = model.stages[-1]
+
+        feature_model = features_pipeline.fit(training)
+        feature_model.write().overwrite().save("model/spark-features-model")
+        featured_training =  feature_model.transform(training)
+
+        lrmodel = lr.fit(featured_training)
+        lrmodel.write().overwrite().save("model/spark-lr-model")
+
+
         # Prepare test documents, which are unlabeled (id, text) tuples.
         test = self.spark.createDataFrame(test_df)
 
         # Make predictions on test documents and print columns of interest.
         start =time.time()
-        prediction = model.transform(test)
+        featured_test = feature_model.transform(test)
+
+        featured_test_pdf = featured_test.toPandas()
+        featured_test_rows = featured_test_pdf.to_dict("records")
+        featured_test_dict ={}
+        for v in featured_test_rows:
+            user_id = v.get('user_id',None)
+            note_id = v.get('note_id',None)
+            if user_id is not None and note_id is not None:
+                v['model'] = lrmodel
+                featured_test_dict[f'{user_id}:{note_id}'] = v
+        featured_result_dict ={}
+        def run(**kwargs):
+            try:
+                print(kwargs)
+                features = kwargs.get('featuers')
+                model = kwargs.get('model')
+                r = model.predict(features)
+            except Exception as e:
+                return e
+            return kwargs
+             
+            # fn: 函数参数是数据列表的一个元素
+        
+        print(f'try pool')
+        print(f'featured_result_dict:{list(featured_test_dict.values())}')
+        pool =ProcessingPool()
+        results =pool.map(run,list(featured_test_dict.values()))
+        for i in results[:10]:
+            print(i.get())
+
+        prediction =  lrmodel.transform(featured_test)
         end = time.time()
         print(f'elasped test:{end-start}')
 

@@ -12,15 +12,21 @@ d = {"note_type": 2.0, "favorite_number": 0.0, "real_source": 21.0, "comment_num
    "label_id": 124.0, "note_id": 6420986, "user_id": 0},
 #d = {"note_type": 2.0, "favorite_number": 0.0, "real_source": 21.0,'user_id':123}
 #                'note_type',
-d ={
-"note_type": 2.0,
- "real_source": 21.0,
- "label_level1_id": 124.0,
- "praise_number": 0.0,
- "note_id": 6420986
-}
-for i in range(100):
-    r.set(f'user:{i}',json.dumps(d))
+# d ={
+# "note_type": 2.0,
+#  "real_source": 21.0,
+#  "label_level1_id": 124.0,
+#  "praise_number": 0.0,
+#  "note_id": 6420986
+# }
+k_list = []
+v_list =[]
+
+for i in range(100000):
+    k_list.append(f'user:{i}')
+    v_list.append(json.dumps(d))
+
+r.batch_set(k_list,v_list)
 
 start = time.time()
 print(r.get('user:0'))
