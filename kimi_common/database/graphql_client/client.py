@@ -1,7 +1,7 @@
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 
-from zmc_common.utils.logger import getLogger
+from kimi_common.utils.logger import getLogger
 
 logger = getLogger(__name__)
 
