@@ -5,11 +5,11 @@ import json
 from kimi_common.mq.kafka import KafkaClient
 
 
-client = KafkaClient(['10.15.0.106:9092'],'test')
+client = KafkaClient(['47.103.86.120:9092'],'test')
 i = 0
 print('enter loop')
 while True:
-    count = random.randint(10,10)
+    count = random.randint(10000,10000)
     for r in range(count):
         d = {
             'user_id':f"{r}",

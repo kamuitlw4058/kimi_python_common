@@ -26,8 +26,8 @@ from kafka import KafkaProducer
 class KafkaClient():
     def __init__(self,bootstrap_servers,topic,default_value_series=None,encoding='utf-8'):
         self.bootstrap_servers = bootstrap_servers
-        self.consumer = KafkaConsumer(topic, bootstrap_servers=bootstrap_servers)
-        self.producer = KafkaProducer(bootstrap_servers=bootstrap_servers)
+        self.consumer = None
+        self.producer = None
         self.topic = topic
         self.encoding = encoding
         

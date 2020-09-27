@@ -61,21 +61,23 @@ class SklearnBinaryClassificationTrainer():
     def negtive_sample(self,df,need_shuffle=True):
         true_df = df[df.label==self.true_value]
         false_df = df[df.label!= self.true_value]
+        true_size = len(true_df)
         false_orig_size = len(false_df)
-        false_df = false_df.sample(false_orig_size* self.negtive_sample_ratio)
+        sample_count = int(true_size* self.negtive_sample_ratio)
+        false_df = false_df.sample(sample_count)
         sampled_df = pd.concat([true_df,false_df])
         if need_shuffle:
             sampled_df = shuffle(sampled_df)
         sample_rate = len(false_df) /false_orig_size
 
-        logger.info(f'true size:{len(true_df)} false size:{false_orig_size} final false size:{false_orig_size * self.negtive_sample_ratio}')
+        logger.info(f'true size:{len(true_df)} false size:{false_orig_size} final false size:{sample_count}')
         logger.info(f'negtive sample ratio:{self.negtive_sample_ratio} final sample rate:{sample_rate}')
 
         return sampled_df,sample_rate
 
     def data_split(self,df):
         total_size =  len(df)
-        test_split_count = total_size * self.test_split_ratio
+        test_split_count = int(total_size * self.test_split_ratio)
         train_df = df[:-test_split_count]
         test_df = df[-test_split_count:]
         return train_df,test_df
@@ -93,7 +95,7 @@ class SklearnBinaryClassificationTrainer():
     
     def train(self,df):
         df = df[self.cate_features + self.number_features +  [self.label]]
-        df[self.cate_features] = df[self.cate_features].fillna(self.cate_nan_value)
+        df[self.cate_features] = df[self.cate_features].astype(str).fillna(self.cate_nan_value)
 
         ## 
         # sample_rate 用来后续做校正
@@ -138,16 +140,12 @@ class SklearnBinaryClassificationTrainer():
     
     def predict(self,df):
         start =time.time()
-        df[self.cate_features] = df[self.cate_features].fillna(self.cate_nan_value)
+        df[self.cate_features] = df[self.cate_features].astype(str).fillna(self.cate_nan_value)
         cate_features_df = self.onehot_encoder.transform(df[self.cate_features])
         number_featuers_df  = self.standard_scaler.transform(df[self.number_features])
         features =  np.concatenate((cate_features_df,number_featuers_df), axis=1)
         df[['predict0','predict1']]= self.lr_model.predict_proba(features)
         end = time.time()
-        logger.info(f'predicted data elasped:{end-start}')
+        logger.info(f'predicte {len(df)} data elapsed:{end-start}')
         return df
-
-
-
-
 

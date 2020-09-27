@@ -1,4 +1,8 @@
+import time
 from redis import StrictRedis   # 导入redis 模块
+from kimi_common.utils.logger import getLogger
+
+logger = getLogger(__name__)
 
 
 class RedisClient():
@@ -7,20 +11,40 @@ class RedisClient():
     
     def set(self,k,v):
         self.redis.set(k,v)
+
     def get(self,k):
         return self.redis.get(k)
     
     def batch_get(self,k_list,transaction=False):
+        start =time.time()
         pipe = self.redis.pipeline(transaction=transaction)
         for i in k_list:
             pipe.get(i)
         ret = pipe.execute()
+        end =time.time()
+        print(f'elasped:{ end - start}')
         return zip(k_list,ret)
     
-    def batch_set(self,k_list,v_list,transaction=False):
+    def batch_set(self,k_list,v_list,transaction=False,join_str=','):
         pipe = self.redis.pipeline(transaction=transaction)
         for k,v in zip(k_list,v_list):
+            if isinstance(v,list):
+                v = join_str.join([str(i) for i in v])
             pipe.set(k,v)
+        ret = pipe.execute()
+        return zip(k_list,ret)
+
+    def batch_set_list(self,k_list,v_list,transaction=False):
+        pipe = self.redis.pipeline(transaction=transaction)
+        for k,v in zip(k_list,v_list):
+            pipe.lset(k,0,v)
+        ret = pipe.execute()
+        return zip(k_list,ret)
+    
+    def batch_get_list(self,k_list,transaction=False):
+        pipe = self.redis.pipeline(transaction=transaction)
+        for k in zip(k_list):
+            pipe.lrange(k,0,-1)
         ret = pipe.execute()
         return zip(k_list,ret)
 
