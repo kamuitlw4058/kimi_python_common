@@ -2,7 +2,7 @@
 from distutils.core import setup
 import setuptools
 
-setup(name='kimi_common',
+setup(name='python_common',
     version='0.1',
     packages=setuptools.find_packages(),
 )
