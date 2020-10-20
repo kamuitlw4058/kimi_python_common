@@ -47,7 +47,7 @@ class HDFS:
         # f = open(src_local_file, 'rb')
         # self._fs.upload(dst_hdfs_file, f)
         # f.close()
-        run_cli(f'hadoop fs -put -f {src_local_file} {dst_hdfs_file}',self,env)
+        run_cli(f'hadoop fs -put -f {src_local_file} {dst_hdfs_file}',self.env)
 
     def mkdir(self, hdfs_dir):
         run_cli(f'hadoop fs -mkdir -p {hdfs_dir}',self.env)

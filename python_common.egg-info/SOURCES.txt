@@ -15,6 +15,9 @@ python_common/database/client/clients.py
 python_common/database/client/postgres.py
 python_common/database/graphql_client/__init__.py
 python_common/database/graphql_client/client.py
+python_common/hadoop/__init__.py
+python_common/hadoop/hdfs.py
+python_common/hadoop/pack.py
 python_common/kv/__init__.py
 python_common/kv/redis.py
 python_common/location/__init__.py
@@ -35,6 +38,7 @@ python_common/utils/datetime_utils.py
 python_common/utils/logger.py
 python_common/utils/pd_utils.py
 python_common/utils/processing_utils.py
+python_common/utils/shell_utils.py
 python_common/utils/type_convert.py
 python_common/utils/url_utils.py
 python_common/utils/pandas/__init__.py
@@ -49,6 +53,7 @@ test/test_datetime.py
 test/test_db_client.py
 test/test_es.py
 test/test_graphql.py
+test/test_hdfs.py
 test/test_kafka_reader.py
 test/test_kafka_writer.py
 test/test_location.py
