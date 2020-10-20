@@ -3,5 +3,5 @@ dist/*
 
 build/*
 *.pyc
-kimi_common.egg-info/
+python_common.egg-info/
 .vscode/
