@@ -5,3 +5,7 @@ build/*
 *.pyc
 python_common.egg-info/
 .vscode/
+logs
+iris_model
+iris_test.csv
+iris_training.csv
