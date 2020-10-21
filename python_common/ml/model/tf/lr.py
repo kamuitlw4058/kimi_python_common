@@ -18,40 +18,51 @@ from python_common.ml.model.tf.base import TFModel
 
 class LogisticRegression(TFModel):
     def __init__(self, input_dim,learning_rate, ckpt_dir, l2=1.0,sess=None):
-        super.__init__(ckpt_dir,sess=sess)
-        self._sess = sess
+        super().__init__(ckpt_dir,sess)
         self._input_dim = input_dim
-        self.learning_rate = learning_rate
+        self._learning_rate = learning_rate
         self._l2 = float(l2)
         self._input_name = 'input/x:0'
         self._output_name = 'lr/Sigmoid:0'
+        self._auc_op = None
+
+    def input_name(self):
+        return self.input_name
+    
+    def output_name(self):
+        return self.output_name
 
 
-    def train_op(self, x, y_):
+    def build_model(self):
+        with tf.name_scope('input'):
+            self._x = tf.placeholder(tf.float32, shape=[None, self._input_dim], name='x')
+            self._y = tf.placeholder(tf.float32, shape=[None, 1], name='y')
+
         regularizer = tf.contrib.layers.l2_regularizer(self._l2)
 
         lr = tf.layers.Dense(units=1, activation=tf.nn.sigmoid, kernel_regularizer=regularizer, name='lr')
         #logger.info("kernel_regularizer:" + str(lr.activation) + " type:" + str(type(lr.activation)))
         #logger.info("dense:" + str(lr) + " type:"+ str(type(lr)))
-        y = lr(x)
+        self._y_ = lr(self._x)
         #logger.info("y:" + str(y) + " type:" + str(type(y)))
 
 
-        loss = tf.losses.log_loss(y_, y) + tf.reduce_sum(lr.losses)
-        tf.summary.scalar('loss', loss)
+        self._loss_op = tf.losses.log_loss(self._y, self._y_) + tf.reduce_sum(lr.losses)
+        tf.summary.scalar('loss', self._loss_op)
 
-        _, auc_op = tf.metrics.auc(predictions=y, labels=y_)
-        tf.summary.scalar('auc', auc_op)
+        _, self._auc_op = tf.metrics.auc(predictions=self._y_, labels=self._y)
+        tf.summary.scalar('auc', self._auc_op)
+        self._summary_op = tf.summary.merge_all() 
+
 
         global_step = tf.train.get_or_create_global_step()
-        train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss, global_step=global_step)
+        self._train_op = tf.train.AdamOptimizer(self._learning_rate).minimize(self._loss_op, global_step=global_step)
 
-        return train_op
 
     def predict(self, input_x):
-        x = self._sess.graph.get_tensor_by_name(self._input_name)
-        y = self._sess.graph.get_tensor_by_name(self._output_name)
-        return self._sess.run(y, feed_dict={x: input_x})
+        x = self._x()
+        y = self._y()
+        return self.sess.run(y, feed_dict={x: input_x})
 
 
     def get_tensor(self,ckpt_dir):
@@ -64,7 +75,8 @@ class LogisticRegression(TFModel):
         w = reader.get_tensor("lr/kernel")
         return w
 
-
+    def auc_op(self):
+        return self._auc_op
 
     def get_weight(self):
         return self._sess.run('lr/kernel:0')

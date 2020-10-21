@@ -18,6 +18,9 @@ python_common/database/graphql_client/client.py
 python_common/hadoop/__init__.py
 python_common/hadoop/hdfs.py
 python_common/hadoop/pack.py
+python_common/hadoop/spark/__init__.py
+python_common/hadoop/spark/df.py
+python_common/hadoop/spark/udf.py
 python_common/kv/__init__.py
 python_common/kv/redis.py
 python_common/location/__init__.py
@@ -26,6 +29,16 @@ python_common/ml/__init__.py
 python_common/ml/features.py
 python_common/ml/sklearn.py
 python_common/ml/spark.py
+python_common/ml/io/__init__.py
+python_common/ml/io/data_generator.py
+python_common/ml/model/__init__.py
+python_common/ml/model/tf/__init__.py
+python_common/ml/model/tf/base.py
+python_common/ml/model/tf/lr.py
+python_common/ml/model/trainer/__init__.py
+python_common/ml/model/trainer/base.py
+python_common/ml/model/trainer/lr_local_trainer.py
+python_common/ml/model/trainer/single.py
 python_common/mq/__init__.py
 python_common/mq/kafka.py
 python_common/proxy/__init__.py
@@ -64,4 +77,5 @@ test/test_proxy.py
 test/test_re.py
 test/test_redis.py
 test/test_sklearn.py
+test/test_spark.py
 test/test_xinzhi.py
