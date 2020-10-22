@@ -29,8 +29,8 @@ python_common/ml/__init__.py
 python_common/ml/features.py
 python_common/ml/sklearn.py
 python_common/ml/spark.py
-python_common/ml/io/__init__.py
-python_common/ml/io/data_generator.py
+python_common/ml/datasource/__init__.py
+python_common/ml/datasource/data_generator.py
 python_common/ml/model/__init__.py
 python_common/ml/model/tf/__init__.py
 python_common/ml/model/tf/base.py

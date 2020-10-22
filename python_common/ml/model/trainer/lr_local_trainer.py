@@ -1,4 +1,4 @@
-from python_common.ml.io.data_generator import LRDataGenerator
+from python_common.ml.datasource.data_generator import LRDataGenerator
 from python_common.ml.model.tf.lr import LogisticRegression
 
 import matplotlib.pyplot as plt
