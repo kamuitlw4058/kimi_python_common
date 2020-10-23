@@ -3,11 +3,15 @@ import os
 import time
 
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy.engine import create_engine
 from sqlalchemy.engine import reflection
 
+from python_common.utils.logger import getLogger
 
-class BaseClient(metaclass=abc.ABCMeta):
+logger = getLogger(__name__)
+
+
+class DBClient(metaclass=abc.ABCMeta):
 
     @classmethod
     def get_engine_url(cls,**kwargs):
@@ -20,8 +24,9 @@ class BaseClient(metaclass=abc.ABCMeta):
         return engine_url
 
     def __init__(self,**kwargs):
-        engine_url = BaseClient.get_engine_url(**kwargs)
+        engine_url = DBClient.get_engine_url(**kwargs)
         self.engine_url = engine_url
+        logger.info(f'engine url:{engine_url}')
         charset =kwargs.get('charset',None)
         protocol =kwargs.get('protocol',None)
         self.show_func_elapsed = False
@@ -29,7 +34,7 @@ class BaseClient(metaclass=abc.ABCMeta):
             self.engine = create_engine(engine_url,encoding=charset)
         else:
             self.engine = create_engine(engine_url)
-        self.protocol = kwargs['protocol']
+        self.protocol = protocol
         self.insp = None
 
     # @classmethod

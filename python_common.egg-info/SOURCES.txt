@@ -30,7 +30,10 @@ python_common/ml/features.py
 python_common/ml/sklearn.py
 python_common/ml/spark.py
 python_common/ml/datasource/__init__.py
+python_common/ml/datasource/base_datasource.py
+python_common/ml/datasource/clickhouse_sql.py
 python_common/ml/datasource/data_generator.py
+python_common/ml/datasource/sql_datasource.py
 python_common/ml/model/__init__.py
 python_common/ml/model/tf/__init__.py
 python_common/ml/model/tf/base.py

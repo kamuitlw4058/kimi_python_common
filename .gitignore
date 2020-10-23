@@ -1,7 +1,7 @@
 *.json
-dist/*
-
-build/*
+dist
+build
+.cache
 *.pyc
 python_common.egg-info/
 .vscode/
