@@ -27,8 +27,11 @@ class DBClient(metaclass=abc.ABCMeta):
         engine_url = DBClient.get_engine_url(**kwargs)
         self.engine_url = engine_url
         logger.info(f'engine url:{engine_url}')
+
         charset =kwargs.get('charset',None)
         protocol =kwargs.get('protocol',None)
+        self._user = kwargs.get('user',None)
+        self._password = kwargs.get('password',None)
         self.show_func_elapsed = False
         if charset is not None:
             self.engine = create_engine(engine_url,encoding=charset)
@@ -36,18 +39,12 @@ class DBClient(metaclass=abc.ABCMeta):
             self.engine = create_engine(engine_url)
         self.protocol = protocol
         self.insp = None
-
-    # @classmethod
-    # def show_elapsed(func): 
-    #     def ware(self, *args, **kwargs):   
-    #         start = time.time()
-    #         ret = func(self, *args, **kwargs)
-    #         end = time.time()
-    #         if self.show_func_elapsed:        
-    #             print(f'sql run: {end} - start')
-    #         return ret
- 
-    #     return ware
+    
+    def user(self):
+        return self._user
+    
+    def password(self):
+        return self._password
 
 
     def get_engine(self):

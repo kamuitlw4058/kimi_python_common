@@ -10,9 +10,8 @@ python_common/crypto/__init__.py
 python_common/crypto/base.py
 python_common/database/__init__.py
 python_common/database/client/__init__.py
-python_common/database/client/base.py
 python_common/database/client/clients.py
-python_common/database/client/postgres.py
+python_common/database/client/db_client.py
 python_common/database/graphql_client/__init__.py
 python_common/database/graphql_client/client.py
 python_common/hadoop/__init__.py
@@ -31,9 +30,9 @@ python_common/ml/sklearn.py
 python_common/ml/spark.py
 python_common/ml/datasource/__init__.py
 python_common/ml/datasource/base_datasource.py
+python_common/ml/datasource/clickhouse_datasource.py
 python_common/ml/datasource/clickhouse_sql.py
 python_common/ml/datasource/data_generator.py
-python_common/ml/datasource/sql_datasource.py
 python_common/ml/model/__init__.py
 python_common/ml/model/tf/__init__.py
 python_common/ml/model/tf/base.py
