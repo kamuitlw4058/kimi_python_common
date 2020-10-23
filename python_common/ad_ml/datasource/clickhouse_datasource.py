@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from pyspark.sql import SparkSession
 from functools import reduce
 
-from python_common.database.client.db_client import DBClient
 from python_common.ml.datasource.base_datasource import DataSource
 from python_common.ml.datasource.clickhouse_sql import ClickHouseSQL
 from python_common.hadoop.spark import udf
@@ -19,12 +18,14 @@ class ClickHouseDataSource(DataSource):
                 features_cols,
                 hosts,
                 filters,
-                db_client,
+                db_params,
                 spark,
                 expend_opt = [],
                 expend_dict_opt = [],
-                clk_col = ('notEmpty(Click_Timestamp) = 1','clk'),
-                imp_col = ('(notEmpty(Click_Timestamp) = 1) OR (notEmpty(Click_Timestamp) = 0)','imp'),
+                clk_exp = 'notEmpty(Click_Timestamp) = 1',
+                clk_name = 'clk',
+                imp_exp = '(notEmpty(Click_Timestamp) = 1) OR (notEmpty(Click_Timestamp) = 0)',
+                imp_name = 'imp',
                 date_col='EventDate',
                 ):
         self._table= table
@@ -32,12 +33,16 @@ class ClickHouseDataSource(DataSource):
 
         self._data_col = date_col
         self._features_cols = features_cols
-        self._clk_col = clk_col
-        self._imp_col = imp_col
+        self._clk_exp = clk_exp
+        self._imp_exp = imp_exp
+        self._clk_name = clk_name
+        self._imp_name = imp_name
+        self._clk_col  =(self._clk_exp,self._clk_name)
+        self._imp_col  =(self._imp_exp,self._imp_name)
         self._expend_opt = expend_opt
         self._expend_dict_opt = expend_dict_opt
 
-        self._db_client = db_client
+        self._db_params = db_params
         if isinstance(hosts,str):
             hosts = [hosts]
 
@@ -86,28 +91,11 @@ class ClickHouseDataSource(DataSource):
         raise ValueError(f'unknonw col type!: {col}')
 
 
-    def get_clk_imp(self, filters=[]):
-        self._clk_col
-        cols = [
-            self._col_exp(self._clk_col,op='sum'),
-            self._col_exp(self._imp_col,op='sum'),
-        ]
-        sql = ClickHouseSQL()
-        filters.extend(self._filters)
-        logger.debug(filters)
-        q = sql.table(self._table).select(cols).where(filters).to_string()
-        logger.debug("clk imp count sql: " + q)
-
-        num = self._db_client.read_sql(q)
-        if num.empty:
-            clk_num, imp_num = 0, 0
-        else:
-            clk_num, imp_num = num.clk.sum(), num.imp.sum()
-
-        return clk_num, imp_num
-    
     def clk_imp(self,df):
-        pass
+        summary_df = df.describe([self._imp_name,self._clk_name]).filter("summary = 'count'")
+        imp_count = summary_df.select(self._imp_name).collect()[0][0]
+        clk_count = summary_df.select(self._clk_name).collect()[0][0]
+        return clk_count,imp_count
 
 
     def dataset(self):
@@ -118,10 +106,10 @@ class ClickHouseDataSource(DataSource):
                 'url':self._jdbc_url,
                 'query':f'select {self._data_col},{cols},{self._col_exp(self._imp_col)},{self._col_exp(self._clk_col)} from {self._table}',
             }
-            if self._db_client.user():
-                option_dict['user']=self._db_client.user()
-            if self._db_client.password():
-                option_dict['password']=self._db_client.password()
+            if self._db_params.user:
+                option_dict['user']=self._db_params.user
+            if self._db_params.password:
+                option_dict['password']=self._db_params.password
             logger.debug(option_dict)
             df = self._spark.read.format("jdbc") \
                 .options(**option_dict).load()
