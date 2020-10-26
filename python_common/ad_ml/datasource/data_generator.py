@@ -29,7 +29,7 @@ class DataGenerator(metaclass=abc.ABCMeta):
 
 
 class LRDataGenerator(DataGenerator):
-    def __init__(self, filedir,batch_size, epoch=10,label='is_clk',cate_sparse_features='cate_sparse_features',number_features='number_features', subffix='.parquet'):
+    def __init__(self, filedir,batch_size, epoch=10,label='is_clk',cate_sparse_features='onehot_sparse_features',number_features='number_features', subffix='.parquet'):
         self.batch_size = batch_size
         file_list = [os.path.join(filedir, i) for i in os.listdir(filedir) if i.endswith(subffix)]
         f = file_list[0]

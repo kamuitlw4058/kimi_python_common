@@ -1,9 +1,12 @@
-from python_common.ml.datasource.data_generator import LRDataGenerator
-from python_common.ml.model.tf.lr import LogisticRegression
+from python_common.ad_ml.datasource.data_generator import LRDataGenerator
+from python_common.ad_ml.model.tf.lr import LogisticRegression
 
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+
+from python_common.utils.logger import getLogger
+logger = getLogger(__name__)
 
 
 class LRLocalTrainer():
@@ -42,9 +45,10 @@ class LRLocalTrainer():
         while True:
             try:
                 train_x, train_y = next(generator)
+                logger.info(train_x)
                 sess.run(train_op, feed_dict={x: train_x, y: train_y})
-                print(f'loss:{sess.run(loss, feed_dict={x: train_x, y: train_y})}')
-                print(f'auc:{sess.run(auc_op, feed_dict={x: train_x, y: train_y})}')
+                logger.info(f'loss:{sess.run(loss, feed_dict={x: train_x, y: train_y})}')
+                logger.info(f'auc:{sess.run(auc_op, feed_dict={x: train_x, y: train_y})}')
             except StopIteration:
                 break
 

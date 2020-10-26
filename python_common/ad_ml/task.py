@@ -1,13 +1,16 @@
-
+import time 
 import os
 from pyspark.sql import SparkSession
 
 from python_common.ad_ml.datasource.clickhouse_datasource import ClickHouseDataSource
 from python_common.ad_ml.preprocess import NegativeSampling
 from python_common.ad_ml.features.lr_features import LRFeaturesTransfromer
+from python_common.ad_ml.model.trainer.lr_local_trainer import LRLocalTrainer
+from python_common.hadoop.spark.udf import to_sparse
 from python_common.ad_ml.datasource.clickhouse_datasource import logger as ds_logger
 from python_common.hadoop.spark import udf
 from python_common.utils.logger import getLogger
+
 
 logger = getLogger(__name__)
 
@@ -17,9 +20,11 @@ class Task():
                 table,
                 filters,
                 cols,
+                label,
                 expend_opts,
                 features_opts,
-                hdfs_dir,
+                data_dir,
+                model_dir,
                 db_params,):
         self._task_id =task_id
         self._table = table
@@ -28,7 +33,9 @@ class Task():
         self._cols = cols
         self._features_opts = features_opts
         self._db_params = db_params
-        self._hdfs_dir = hdfs_dir
+        self._data_dir = data_dir
+        self._model_dir = model_dir
+        self._label = label
         self._spark = None
         
     
@@ -55,6 +62,17 @@ class Task():
     def db_params(self):
         return self._db_params
 
+    @property
+    def label(self):
+        return self._label
+
+    @property
+    def data_dir(self):
+        return self._data_dir
+
+    @property
+    def model_dir(self):
+        return self._model_dir
 
     def set_spark(self,spark):
         self._spark = spark
@@ -72,10 +90,11 @@ class Task():
             elif 'multi_onehot' in v:
                 multi_onehot_features.append(k)
         return number_features,onehot_features,multi_onehot_features
-
+    
     
     def to_parquet(self,df,subdir):
-        df.write.parquet(path=os.path.join(self._hdfs_dir,subdir), mode='overwrite')
+        df = df.withColumn('onehot_sparse_features', to_sparse('onehot_features'))
+        df.write.parquet(path=os.path.join(self._data_dir,subdir), mode='overwrite')
 
 
     @classmethod
@@ -110,6 +129,12 @@ class Task():
         test_df = features_transfromer.transform(test_df)
         task.to_parquet(train_df,'train')
         task.to_parquet(test_df,'test')
+        
+        time.sleep(3)
+
+        
+        trainer = LRLocalTrainer(os.path.join(task.data_dir,'train'),task.model_dir,label=task.label)
+        trainer.train()
 
         
 
