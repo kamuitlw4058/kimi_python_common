@@ -1,11 +1,11 @@
-import abc
 
+from python_common.ad_ml.base import TransformerMixin
 from python_common.utils.logger import getLogger
 logger = getLogger(__name__)
 
 
 
-class  NegativeSampling():
+class  NegativeSampling(TransformerMixin):
     # MAX_POS_SAMPLE = 666 * 10e3
     # MIN_POS_SAMPLE = 40 * 10e3
     def __init__(self,pos_proportion,neg_proportion,clk_name,imp_name,max_pos_sample= 666 * 10e3):
@@ -21,22 +21,25 @@ class  NegativeSampling():
         if clk_count > self._max_pos_sample:
             clk_count = self._max_pos_sample
 
-        pos_ratio = self._pos_proportion
-        neg_ratio = self._neg_proportion * clk_count / (imp_count - clk_count)
+        pos_ratio = float(self._pos_proportion)
+        neg_ratio = float(self._neg_proportion * clk_count / (imp_count - clk_count))
 
-        pos_ratio = min(pos_ratio, 1)
-        neg_ratio = min(neg_ratio, 1)
+        pos_ratio = min(pos_ratio, 1.0)
+        neg_ratio = min(neg_ratio, 1.0)
 
         return pos_ratio, neg_ratio
 
-    def fit_transform(self,df,clk_count,imp_count):
+    def fit(self,df,y=None, **fit_params):
+        imp_count = int(df.filter(f'{self._imp_name} = 1').count())
+        clk_count =  int(df.filter(f'{self._clk_name} = 1').count())
+        logger.info(f'fit:{clk_count},{imp_count}')
+
         self._pos_ratio, self._neg_ratio = self._sample_ratio(clk_count,imp_count)
-        pos_df = df.filter(f"{self._clk_name} > 0").sample(self._pos_ratio)
-        neg_df = df.filter(f"{self._clk_name} = 0").sample(self._neg_ratio)
-        return pos_df.union(neg_df)
+        logger.info(f'fit:{self._pos_ratio},{self._neg_ratio}')
+        return self
 
     
-    def transform(self,df):
+    def transform(self,df,y=None):
         if not self._neg_ratio or not self._pos_ratio:
             raise ValueError('before transform fit first!!')
 

@@ -92,10 +92,9 @@ class ClickHouseDataSource(DataSource):
 
 
     def clk_imp(self,df):
-        summary_df = df.describe([self._imp_name,self._clk_name]).filter("summary = 'count'")
-        imp_count = summary_df.select(self._imp_name).collect()[0][0]
-        clk_count = summary_df.select(self._clk_name).collect()[0][0]
-        return clk_count,imp_count
+        imp_count = df.filter(f'{self._imp_name} = 1').count()
+        clk_count =  df.filter(f'{self._clk_name} = 1').count()
+        return int(clk_count),int(imp_count)
 
 
     def dataset(self):
