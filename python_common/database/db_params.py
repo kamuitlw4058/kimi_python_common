@@ -24,15 +24,19 @@ class DBParams():
             self._port =  kwargs.get('port',None)
 
         self._database = kwargs.get('database',None)
-        self._host = kwargs.get('hosts',None)
+        self._host = kwargs.get('host',None)
 
     @property
     def engine_url(self):
         return DBParams.get_engine_url(**self._kwargs)
+    
+    @property
+    def host(self):
+        return self._host
 
     @property
     def port(self):
-        pass
+        return self._port
         
     @property
     def user(self):

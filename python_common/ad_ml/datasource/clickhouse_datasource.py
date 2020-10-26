@@ -13,10 +13,8 @@ logger = getLogger(__name__)
 
 class ClickHouseDataSource(DataSource):
     def __init__(self,
-                database,
                 table, 
                 features_cols,
-                hosts,
                 filters,
                 db_params,
                 spark,
@@ -43,16 +41,18 @@ class ClickHouseDataSource(DataSource):
         self._expend_dict_opt = expend_dict_opt
 
         self._db_params = db_params
-        if isinstance(hosts,str):
-            hosts = [hosts]
+        if isinstance(db_params.host,str):
+            hosts = [db_params.host]
+        else:
+            hosts = db_params.host
 
         self._hosts = hosts
         self._filters = filters
         self._clickhouse_url_temp = 'clickhouse://{}/{}'
         self._jdbc_clickhouse_url_temp = 'jdbc:clickhouse://{}:8123/{}'
-        self._url = self._clickhouse_url_temp.format(random.choice(hosts),database)
+        self._url = self._clickhouse_url_temp.format(random.choice(hosts),db_params.database)
         logger.debug(f'sqlalchemy url:{self._url}')
-        self._jdbc_url = self._jdbc_clickhouse_url_temp.format(random.choice(hosts),database)
+        self._jdbc_url = self._jdbc_clickhouse_url_temp.format(random.choice(hosts),db_params.database)
         logger.debug(f'jdbc url:{self._jdbc_url}')
         self._engine = create_engine(self._url)
         self._spark = spark

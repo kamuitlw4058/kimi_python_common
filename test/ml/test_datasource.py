@@ -38,7 +38,7 @@ spark = SparkSession \
     .getOrCreate()
 # sc = spark.sparkContext
 # sc.setLogLevel('DEBUG')
-ds =  ClickHouseDataSource('xn_adp','imp_all',['User_Age'],'cc-uf6tj4rjbu5ez10lb.ads.aliyuncs.com',["Device_Os = 'ios'"], db_client,spark,expend_opt=opts)
+ds =  ClickHouseDataSource('imp_all',['User_Age'],'cc-uf6tj4rjbu5ez10lb.ads.aliyuncs.com',["Device_Os = 'ios'"], db_client,spark,expend_opt=opts)
 df = ds.dataset()
 df.show()
 train_df = ds.train_dataset()
