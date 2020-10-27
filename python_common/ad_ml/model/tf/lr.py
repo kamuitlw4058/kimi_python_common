@@ -11,7 +11,7 @@ import tensorflow as tf
 from python_common.utils.logger import getLogger
 logger = getLogger(__name__)
 
-from python_common.ml.model.tf.base import TFModel
+from python_common.ad_ml.model.tf.base import TFModel
 
 
 

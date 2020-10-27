@@ -4,8 +4,8 @@ from sqlalchemy import create_engine
 from pyspark.sql import SparkSession
 from functools import reduce
 
-from python_common.ml.datasource.base_datasource import DataSource
-from python_common.ml.datasource.clickhouse_sql import ClickHouseSQL
+from python_common.ad_ml.datasource.base_datasource import DataSource
+from python_common.ad_ml.datasource.clickhouse_sql import ClickHouseSQL
 from python_common.hadoop.spark import udf
 from python_common.utils.logger import getLogger
 

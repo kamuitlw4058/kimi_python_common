@@ -51,6 +51,10 @@ class LRLocalTrainer():
                 logger.info(f'auc:{sess.run(auc_op, feed_dict={x: train_x, y: train_y})}')
             except StopIteration:
                 break
+        saver = tf.train.Saver()
+        saver.save(sess, 'data/model/my_test_model')
+
+        
 
 
 

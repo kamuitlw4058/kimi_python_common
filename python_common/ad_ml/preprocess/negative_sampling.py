@@ -1,5 +1,5 @@
 
-from python_common.ad_ml.base import TransformerMixin
+from python_common.ad_ml.preprocess.base_preprocess import TransformerMixin
 from python_common.utils.logger import getLogger
 logger = getLogger(__name__)
 
