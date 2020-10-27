@@ -1,5 +1,5 @@
 import abc
-import tensorflow as tf 
+import tensorflow as tf
 
 from python_common.utils.logger import getLogger
 logger = getLogger(__name__)
@@ -26,17 +26,21 @@ class TFModel(metaclass=abc.ABCMeta):
         self._sess.run(tf.global_variables_initializer())
         self._sess.run(tf.local_variables_initializer())
 
-    
-    def from_checkpoint(self):
-        tf.reset_default_graph()
-        ckpt = tf.train.get_checkpoint_state(self._ckpt_dir)
+    @classmethod
+    def from_checkpoint(self,ckpt_dir,sess=None):
+        if sess is None:
+            sess = tf.Session()
+            logger.info('init new session!')
+
+        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
+        logger.info(f'ckpt dir:{ckpt_dir}')
 
         saver = tf.train.import_meta_graph(f'{ckpt.model_checkpoint_path}.meta', clear_devices=True)
-        logger.info('local ckpt dir: %s', ckpt.model_checkpoint_path)
+        logger.info( f'ckpt meta:{ckpt.model_checkpoint_path}.meta')
 
-        saver.restore(self._sess, tf.train.latest_checkpoint(self._ckpt_dir))
+        saver.restore(sess, tf.train.latest_checkpoint(ckpt_dir))
 
-        return self
+        return sess
     
     @abc.abstractmethod
     def build_model(self):

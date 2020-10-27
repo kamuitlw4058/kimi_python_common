@@ -1,10 +1,12 @@
-from python_common.ad_ml.datasource.data_generator import LRDataGenerator
-from python_common.ad_ml.model.tf.lr import LogisticRegression
 
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
+
+from python_common.ad_ml.datasource.data_generator import LocalDataGenerator
+from python_common.ad_ml.model.tf.lr import LogisticRegression
 from python_common.utils.logger import getLogger
 logger = getLogger(__name__)
 
@@ -17,7 +19,8 @@ class LRLocalTrainer():
                 label = 'is_clk',
                 learning_rate = 0.01,
                 l2 = 0.001,
-                epoch=10):
+                epoch=10,
+                model_name='model.ckpt'):
         self._input_dir = input_dir
         self._batch_size = batch_size
         self._epoch = epoch
@@ -25,9 +28,14 @@ class LRLocalTrainer():
         self._ckpt_dir = ckpt_dir
         self._learning_rate = learning_rate
         self._l2 = l2
-        self._data_generator =  LRDataGenerator(self._input_dir,self._batch_size,label=self._label,epoch=self._epoch)
+        self._data_generator =  LocalDataGenerator(self._input_dir,self._batch_size,label=self._label,epoch=self._epoch)
         self._dim = self._data_generator.get_dim()
         self._lr =  LogisticRegression(self._dim,self._learning_rate,self._ckpt_dir,l2=self._l2)
+        self._model_name = model_name
+        if not os.path.exists(self._ckpt_dir):
+            os.makedirs(self._ckpt_dir)
+        
+        self._model_path = os.path.join(self._ckpt_dir,self._model_name)
 
 
     
@@ -52,7 +60,7 @@ class LRLocalTrainer():
             except StopIteration:
                 break
         saver = tf.train.Saver()
-        saver.save(sess, 'data/model/my_test_model')
+        saver.save(sess,  self._model_path)
 
         
 

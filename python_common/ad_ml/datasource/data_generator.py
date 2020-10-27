@@ -28,7 +28,7 @@ class DataGenerator(metaclass=abc.ABCMeta):
         return self.dim
 
 
-class LRDataGenerator(DataGenerator):
+class LocalDataGenerator(DataGenerator):
     def __init__(self, filedir,batch_size, epoch=10,label='is_clk',cate_sparse_features='onehot_sparse_features',number_features='number_features', subffix='.parquet'):
         self.batch_size = batch_size
         if filedir.startswith('file://'):

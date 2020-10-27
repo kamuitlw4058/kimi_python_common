@@ -19,9 +19,9 @@ class BaseTask(metaclass=abc.ABCMeta):
                 expend_opts,
                 features_opts,
                 task_base_dir,
-                data_dir,
-                model_dir,
-                db_params,):
+                db_params,
+                data_dir_name = 'data',
+                model_dir_name = 'model'):
         self._task_id =task_id
         self._table = table
         self._filters = filters
@@ -30,10 +30,17 @@ class BaseTask(metaclass=abc.ABCMeta):
         self._features_opts = features_opts
         self._db_params = db_params
         self._task_base_dir = task_base_dir
-        self._data_dir = data_dir
-        self._model_dir = model_dir
+        self._data_dir_name = data_dir_name
+        self._model_dir_name = model_dir_name
         self._label = label
         self._spark = None
+
+        if not os.path.exists(self._task_base_dir):
+            os.makedirs(self._task_base_dir)
+        
+        self._task_dir = os.path.join(self._task_base_dir,self._task_id)
+        self._data_dir = os.path.join(self._task_dir,self._data_dir_name)
+        self._model_dir = os.path.join(self._task_dir,self._model_dir_name)
         
     @property
     def task_id(self):
@@ -73,11 +80,11 @@ class BaseTask(metaclass=abc.ABCMeta):
 
     @property
     def data_dir(self):
-        return self._data_dir
+        return self._data_dir_name
 
     @property
     def model_dir(self):
-        return self._model_dir
+        return self._model_dir_name
 
     def set_spark(self,spark):
         self._spark = spark
@@ -99,7 +106,8 @@ class BaseTask(metaclass=abc.ABCMeta):
     
     def to_parquet(self,df,subdir):
         df = df.withColumn('onehot_sparse_features', to_sparse('onehot_features'))
-        df.write.parquet(path=os.path.join(self._data_dir,subdir), mode='overwrite')
+        abspath = os.path.abspath(os.path.join(self._data_dir,subdir))
+        df.write.parquet(path=f'file://{abspath}', mode='overwrite')
 
     @abc.abstractclassmethod
     def run(self):

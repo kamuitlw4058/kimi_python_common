@@ -1,4 +1,6 @@
 
+import json
+
 from pyspark.ml.feature import OneHotEncoder, StringIndexer,StringIndexerModel, VectorAssembler,StandardScaler,StandardScalerModel
 from pyspark.ml import Pipeline
 from pyspark.sql import functions
@@ -146,4 +148,20 @@ class LRFeaturesTransfromer(TransformerMixin):
                     vocabulary.append(d)
 
         self._vocabulary = vocabulary
+        self._dim = index
+        self._indexer = {}
+        for i in self._vocabulary:
+            col_opts = self._indexer.get(i['name'],None)
+            if col_opts is None:
+                col_opts = []
+            col_opts.append(i)
+            self._indexer[i['name']] = col_opts
+        self._features_params = {
+            'dim':index,
+            'indexer':self._indexer
+        }
         return vocabulary
+
+    def save_features(self,task_dir,filename = 'features.json'):
+        with open(f'{task_dir}/{filename}','w') as f:
+            f.write(json.dumps(self._features_params))

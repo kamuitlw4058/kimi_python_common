@@ -22,11 +22,6 @@ class LocalTask(BaseTask):
 
                 #.config("spark.some.config.option", "some-value") \
 
-
-        if not os.path.exists(self._task_base_dir):
-            os.makedirs(self._task_base_dir)
-
-
         ds =  ClickHouseDataSource(self._table,self._cols,self._filters,self._db_params ,self._spark,expend_opt=self._expend_opts)
         df = ds.dataset()
         df.show()
@@ -35,7 +30,6 @@ class LocalTask(BaseTask):
        
         ns =  NegativeSampling(1,2,'clk','imp')
         train_df =  ns.fit_transform(train_df)
-        test_df = ns.transform(test_df)
 
 
         features_transfromer = LRFeaturesTransfromer(features_opts=self._features_opts)
@@ -44,8 +38,10 @@ class LocalTask(BaseTask):
         train_df.show()
 
         test_df = features_transfromer.transform(test_df)
+        test_df.show()
         self.to_parquet(train_df,'train')
         self.to_parquet(test_df,'test')
+        features_transfromer.save_features(self._task_dir)
         
         
         trainer = LRLocalTrainer(os.path.join(self._data_dir,'train'),self._model_dir,label=self._label)

@@ -32,10 +32,10 @@ class  NegativeSampling(TransformerMixin):
     def fit(self,df,y=None, **fit_params):
         imp_count = int(df.filter(f'{self._imp_name} = 1').count())
         clk_count =  int(df.filter(f'{self._clk_name} = 1').count())
-        logger.info(f'fit:{clk_count},{imp_count}')
+        logger.info(f'fit: clk:{clk_count},imp:{imp_count}')
 
         self._pos_ratio, self._neg_ratio = self._sample_ratio(clk_count,imp_count)
-        logger.info(f'fit:{self._pos_ratio},{self._neg_ratio}')
+        logger.info(f'fit: pos:{self._pos_ratio},neg:{self._neg_ratio}')
         return self
 
     
