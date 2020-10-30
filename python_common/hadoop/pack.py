@@ -13,7 +13,15 @@ logger = getLogger(__name__)
 from ..hadoop.hdfs import HDFS
 
 
-def zip_dir(src_dir, dst_name, new_root_name=None, ignore_dir=['__pycache__'],ignore_root_dir= ['.git']):
+def zip_dir(src_dir, dst_name, new_root_name=None, ignore_dir=None,ignore_root_dir= None):
+    if ignore_dir is None:
+        ignore_dir = []
+    ignore_dir.extend(['__pycache__'])
+
+    if ignore_root_dir is None:
+        ignore_root_dir = []
+    ignore_root_dir.extend( ['.git'])
+
     zipf = zipfile.ZipFile(dst_name, 'w', zipfile.ZIP_DEFLATED)
     for root, dirs, files in os.walk(src_dir):
         if not files:
@@ -41,14 +49,14 @@ def zip_dir(src_dir, dst_name, new_root_name=None, ignore_dir=['__pycache__'],ig
             zipf.write(os.path.join(root, file), arcname)
     zipf.close()
 
-def pack_and_upload(upload_path,overwrite = True,package_name= 'trainer_package',package_suffix='zip',hdfs=None,subdir=None):
+def pack_and_upload(upload_path,overwrite = True,package_name= 'trainer_package',package_suffix='zip',hdfs=None,subdir=None, ignore_dir=None,ignore_root_dir=None):
     if subdir is None:
         path = os.getcwd()
     else:
         path = os.path.join(os.getcwd(),subdir)
         
     zip_path = f'{package_name}.{package_suffix}'
-    zip_dir(path, zip_path)
+    zip_dir(path, zip_path,ignore_dir=ignore_dir,ignore_root_dir=ignore_root_dir)
     logger.info(f'build pack from {path} to {zip_path}')
 
     if hdfs is None:
