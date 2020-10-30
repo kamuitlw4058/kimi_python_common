@@ -1,4 +1,9 @@
 import abc
+import random
+
+from python_common.utils.logger import getLogger
+
+logger = getLogger(__name__)
 
 class DBParams():
 
@@ -8,12 +13,17 @@ class DBParams():
         for k,v in kwargs.items():
             if k in ['protocol','user','password','host','port','database']:
                 engine_params[k] = v
+        hosts = engine_params.get('hosts',None)
+        if not engine_params.get('host',None) and hosts and isinstance(hosts,list):
+            engine_params['host'] = random.choice(hosts)
         
+        logger.debug(f'engine url params:{engine_params}')
         engine_url = '{protocol}://{user}:{password}@{host}:{port}/{database}'.format(**engine_params)
         return engine_url
 
     def __init__(self,**kwargs):
         self._kwargs = kwargs
+        self._hosts =kwargs.get('hosts',None)
         self._charset =kwargs.get('charset',None)
         self._protocol =kwargs.get('protocol',None)
         self._user = kwargs.get('user',None)
@@ -32,7 +42,13 @@ class DBParams():
     
     @property
     def host(self):
+        if self._hosts and isinstance(self._hosts,list):
+            return random.choice(self._hosts)
         return self._host
+    
+    @property
+    def hosts(self):
+        return self._hosts
 
     @property
     def port(self):
@@ -51,7 +67,7 @@ class DBParams():
         return self._database
     
     @property
-    def  charset(self):
-        return self.charset
+    def charset(self):
+        return self._charset
     
     

@@ -1,5 +1,5 @@
 
-from .db_client import DBClient
+from .db_client import SqlalchemyClient
 
 class Clients:
     def __init__(self, clients_params={}):
@@ -12,26 +12,26 @@ class Clients:
             raise Exception("register client protocol is None!")
 
         self.clients_params[client_params_key] = client_params
-        engine_url = DBClient.get_engine_url(**client_params)
+        engine_url = SqlalchemyClient.get_engine_url(**client_params)
         
 
 
-    def get_client(self, client_params_key='default',client_params=None) -> DBClient:
+    def get_client(self, client_params_key='default',client_params=None) -> SqlalchemyClient:
         client = None
 
         if client_params is not None:
-            client_key = DBClient.get_engine_url(**client_params)
+            client_key = SqlalchemyClient.get_engine_url(**client_params)
         elif client_params_key is not None:
             client_params = self.clients_params.get(client_params_key,None)
             if client_params is None:
                 return None
-            client_key = DBClient.get_engine_url(**client_params)
+            client_key = SqlalchemyClient.get_engine_url(**client_params)
 
 
         client = self.clients.get(client_key,None)
         if client is None:
             protocol =  client_params['protocol']
-            client = DBClient(**client_params)
+            client = SqlalchemyClient(**client_params)
             self.clients[client_params_key] = client
 
         return client

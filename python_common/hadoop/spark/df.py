@@ -49,3 +49,6 @@ class DFUtils():
         spark_df = spark_df.select(output_cols)
         spark_df.write.parquet(path=dst_path, mode='overwrite')
 
+    def to_clickhouse(self,df,database,table):
+        pass
+
