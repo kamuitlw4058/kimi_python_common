@@ -25,6 +25,10 @@ class SqlalchemyClient(BaseClient):
             self._engine = create_engine(self._default_engine_url)
         self.insp = None
     
+    @property
+    def default_engine_url(self):
+        return self._default_engine_url
+    
     def user(self):
         return self._db_params.user
     
