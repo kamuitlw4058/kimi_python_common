@@ -30,6 +30,7 @@ class BaseClient(metaclass=abc.ABCMeta):
     def __init__(self,show_func_elapsed =False, **kwargs):
         self._db_params = DBParams(**kwargs)
         self._show_func_elapsed = show_func_elapsed
+        self._echo = kwargs.get('echo',False)
 
     
     @abc.abstractproperty

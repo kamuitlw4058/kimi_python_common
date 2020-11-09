@@ -20,9 +20,9 @@ class SqlalchemyClient(BaseClient):
         logger.info(f'default engine url:{self._default_engine_url}')
         charset = self._db_params.charset
         if charset is not None:
-            self._engine = create_engine(self._default_engine_url,encoding=self._db_params.charset)
+            self._engine = create_engine(self._default_engine_url,encoding=self._db_params.charset,echo=self._echo)
         else:
-            self._engine = create_engine(self._default_engine_url)
+            self._engine = create_engine(self._default_engine_url,echo=self._echo)
         self.insp = None
     
     @property

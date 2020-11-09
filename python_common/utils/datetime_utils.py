@@ -76,3 +76,7 @@ def ts_to_date(ts,ts_format='%Y-%m-%d'):
 
 def date_to_str(dt,ts_format='%Y-%m-%d'):
     return dt.strftime( ts_format )  
+
+def datetime_to_str(dt,ts_format="%Y-%m-%d %H:%M:%S"):
+    return dt.strftime( ts_format )  
+

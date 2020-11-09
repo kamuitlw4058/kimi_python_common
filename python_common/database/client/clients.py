@@ -8,7 +8,7 @@ class SqlalchemyClients:
         self.clients = {}
         self._show_func_elapsed = show_func_elapsed
 
-    def client(self, client_params_key='default',client_params=None) -> SqlalchemyClient:
+    def client(self, client_params_key='default',client_params=None,echo=False) -> SqlalchemyClient:
         client = self.clients.get(client_params_key,None)
         if client is None:
             if client_params is not None:
@@ -17,7 +17,7 @@ class SqlalchemyClients:
                 client_param = self.client_params.get(client_params_key,None)
 
             if client_param is not None:
-                client = SqlalchemyClient(show_func_elapsed=self._show_func_elapsed, **client_param)
+                client = SqlalchemyClient(show_func_elapsed=self._show_func_elapsed,echo=echo, **client_param)
                 self.clients[client_params_key] = client
 
         return client
