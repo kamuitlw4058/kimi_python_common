@@ -1,3 +1,5 @@
+import time
+
 from datetime import datetime
 
 default_datetime_formats =  [
@@ -55,3 +57,22 @@ def datetime_format(df,format_string='%Y-%m-%d %H:%M:%S',debug=False):
         return None
     else:
         return None
+
+
+def ts_to_str(ts,ts_format = "%Y-%m-%d %H:%M:%S"):
+    return time.strftime(ts_format, time.localtime(ts))
+
+def str_to_ts(ts,ts_format = "%Y-%m-%d %H:%M:%S.%f"):
+    return time.mktime(time.strptime(ts, ts_format))
+
+def str_to_datetime(datetime_str,ts_format = "%Y-%m-%d %H:%M:%S"):
+    return infer_datetime(datetime_str)
+
+def ts_to_datetime(ts,ts_format="%Y-%m-%d %H:%M:%S"):
+    return datetime.strptime(time.strftime(ts_format, time.localtime(ts)),ts_format)
+
+def ts_to_date(ts,ts_format='%Y-%m-%d'):
+    return ts_to_datetime(ts,ts_format)
+
+def date_to_str(dt,ts_format='%Y-%m-%d'):
+    return dt.strftime( ts_format )  

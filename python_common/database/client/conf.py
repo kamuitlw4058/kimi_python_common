@@ -9,6 +9,30 @@ mysql_adsense_pizarr ={
 }
 
 
+clickhouse_cmd_local_adx ={
+    'protocol':'clickhouse',
+    'user':'chaixiaohui',
+    #'user':'default',
+    'password':'AAAaaa111!',
+    #'password':'',
+    'host':'cc-uf6tj4rjbu5ez10lb.ads.aliyuncs.com',
+    'port':3306,
+    'database':'xn_adx'
+}
+
+
+clickhouse_cmd_xn_adx ={
+    'protocol':'clickhouse',
+    'user':'chaixiaohui',
+    #'user':'default',
+    'password':'AAAaaa111!',
+    #'password':'',
+    'host':'cc-uf6tj4rjbu5ez10lb.ads.aliyuncs.com',
+    'port':3306,
+    'database':'xn_adx'
+}
+
+
 clickhouse_xn_adp ={
     'protocol':'clickhouse',
     'user':'chaixiaohui',
@@ -38,4 +62,5 @@ db_params = {
     'ch_xn_adp':clickhouse_xn_adp,
     'ch_xn_adp_knowledge':clickhouse_xn_adp_knowledge,
     'mysql_adsense_pizarr':mysql_adsense_pizarr,
+    'ch_cmd_xn_adx':clickhouse_cmd_xn_adx,
 }
