@@ -18,6 +18,8 @@ class ClickhouseCmdClient(BaseClient):
     def __init__(self,base_dir,**kwargs):
         super().__init__(**kwargs)
         self._base_dir = base_dir
+        if not os.path.exists( self._base_dir):
+            os.makedirs( self._base_dir)
     
     def _build_read_cmd(self,query_path,data_path):
         cmd_list = [f'cat {query_path} | clickhouse-client']

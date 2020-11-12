@@ -5,6 +5,8 @@ python_common.egg-info/SOURCES.txt
 python_common.egg-info/dependency_links.txt
 python_common.egg-info/top_level.txt
 python_common/crawler/__init__.py
+python_common/crawler/cache_pipline.py
+python_common/crawler/item_utils.py
 python_common/crawler/proxy.py
 python_common/crypto/__init__.py
 python_common/crypto/base.py
