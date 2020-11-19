@@ -99,8 +99,6 @@ clickhouse_xn_adp_knowledge ={
 }
 
 
-
-
 db_params = {
     'default':clickhouse_xn_adp,
     'ch_xn_adp':clickhouse_xn_adp,
