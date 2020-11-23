@@ -17,11 +17,11 @@ mysql_adsense_pizarr_test ={
     'database':'adsense_pizarr_db_test'
 }
 
-mysql_local_test ={
+mysql_adx_strategy_test ={
     'protocol':'mysql',
-    'user':'mysql',
+    'user':'root',
     'password':'123456',
-    'host':'localhost',
+    'host':'172.16.11.74',
     'port':3306,
     'database':'adx_strategy'
 }
@@ -109,5 +109,5 @@ db_params = {
     'ch_cmd_xn_adx':clickhouse_cmd_xn_adx,
     'ch_xn_adx':clickhouse_xn_adx,
     'ch_cmd_local_adx':clickhouse_cmd_local_adx,
-    'mysql_local_test':mysql_local_test,
+    'mysql_adx_strategy_test':mysql_adx_strategy_test,
 }

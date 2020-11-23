@@ -40,6 +40,16 @@ class SqlalchemyClient(BaseClient):
         return self._engine
 
     @func_elapsed
+    def read_value(self, sql,default_value,cache_pickle_path=None,use_cache=True,cache_file=True, **kwargs):
+        df = self.read_sql(sql,cache_pickle_path=cache_pickle_path,use_cache=use_cache,cache_file=cache_file,**kwargs)
+        records_list = df.to_dict('records')
+        if len(records_list) != 0 and records_list[0].get('value',None) is not None:
+            value =  records_list[0]['value']
+        else:
+            value = default_value
+        return value 
+
+    @func_elapsed
     def read_sql(self, sql,cache_pickle_path=None,use_cache=True,cache_file=True, **kwargs):
         if use_cache and cache_pickle_path is not None and os.path.exists(cache_pickle_path):
             df =  pd.read_pickle(cache_pickle_path)
@@ -50,10 +60,7 @@ class SqlalchemyClient(BaseClient):
         return df
 
     def exec_sql(self, sql):
-        cursor = self._engine.cursor()
-        cursor.execute(sql)
-        self._engine.commit()
-        cursor.close()
+        self._engine.execute(sql)
 
     def to_sql(self,df,table,index=False,if_exists='append'):
         df.to_sql(table,self._engine,index=index,if_exists=if_exists)

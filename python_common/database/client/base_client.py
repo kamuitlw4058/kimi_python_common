@@ -42,6 +42,10 @@ class BaseClient(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def read_value(self, sql,default_value,cache_pickle_path=None,use_cache=True,cache_file=True, **kwargs):
+        pass
+
+    @abc.abstractmethod
     def exec_sql(self, sql):
         pass
 

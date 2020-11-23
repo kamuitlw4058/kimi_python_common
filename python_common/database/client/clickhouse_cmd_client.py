@@ -53,6 +53,10 @@ class ClickhouseCmdClient(BaseClient):
         return ' '.join(cmd_list)
 
     @func_elapsed
+    def read_value(self,sql,default_value,**kwargs):
+        pass
+
+    @func_elapsed
     def read_sql(self,sql,**kwargs):
         cmd_base_dir = self._base_dir
         running_sql = sql + " FORMAT JSONEachRow"

@@ -3,16 +3,18 @@ from kafka import KafkaProducer
 
 
 class KafkaClient():
-    def __init__(self,bootstrap_servers,topic,default_value_series=None,encoding='utf-8'):
+    def __init__(self,bootstrap_servers,topic,default_value_series=None,encoding='utf-8',group_id='test'):
         self.bootstrap_servers = bootstrap_servers
         self.consumer = None
         self.producer = None
         self.topic = topic
         self.encoding = encoding
+        self.group_id = group_id
         
     def read(self):
         if self.consumer is None:
-            self.consumer = KafkaConsumer(self.topic, bootstrap_servers=self.bootstrap_servers)
+            print(f'build consumer:{self.bootstrap_servers} topic:{self.topic} group_id:{self.group_id}')
+            self.consumer = KafkaConsumer(self.topic, bootstrap_servers=self.bootstrap_servers,group_id=self.group_id)
 
         for msg in self.consumer:
             yield msg
@@ -28,5 +30,7 @@ class KafkaClient():
     def write(self,msg):
         if self.producer is None:
             self.producer = KafkaProducer(bootstrap_servers=self.bootstrap_servers,api_version = (0,10))
-
-        self.producer.send(self.topic, value=msg.encode(self.encoding), partition=0)
+        if isinstance(msg,str):
+            msg = msg.encode(self.encoding)
+        
+        self.producer.send(self.topic, value=msg, partition=0)
