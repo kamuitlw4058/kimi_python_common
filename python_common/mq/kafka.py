@@ -13,9 +13,12 @@ class KafkaClient():
         
     def read(self):
         if self.consumer is None:
-            print(f'build consumer:{self.bootstrap_servers} topic:{self.topic} group_id:{self.group_id}')
-            self.consumer = KafkaConsumer(self.topic, bootstrap_servers=self.bootstrap_servers,group_id=self.group_id)
 
+            print(f'build consumer:{self.bootstrap_servers} topic:{self.topic} group_id:{self.group_id}')
+            consumer = KafkaConsumer(group_id=self.group_id, bootstrap_servers=self.bootstrap_servers)
+            consumer.subscribe(topics=(self.topic,))
+            self.consumer = consumer
+            
         for msg in self.consumer:
             yield msg
 
@@ -29,8 +32,10 @@ class KafkaClient():
     
     def write(self,msg):
         if self.producer is None:
+            print(f'build producer:{self.bootstrap_servers} topic:{self.topic}')
             self.producer = KafkaProducer(bootstrap_servers=self.bootstrap_servers,api_version = (0,10))
         if isinstance(msg,str):
             msg = msg.encode(self.encoding)
         
         self.producer.send(self.topic, value=msg, partition=0)
+        print("end send")
