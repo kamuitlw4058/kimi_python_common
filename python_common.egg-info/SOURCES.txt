@@ -48,6 +48,7 @@ python_common/utils/logger.py
 python_common/utils/pd_utils.py
 python_common/utils/processing_utils.py
 python_common/utils/shell_utils.py
+python_common/utils/tar_utils.py
 python_common/utils/type_convert.py
 python_common/utils/url_utils.py
 python_common/utils/pandas/__init__.py
