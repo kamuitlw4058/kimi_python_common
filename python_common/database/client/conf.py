@@ -123,5 +123,5 @@ db_params = {
     'ch_xn_adx':clickhouse_xn_adx,
     'ch_cmd_local_adx':clickhouse_cmd_local_adx,
     'mysql_adx_strategy_test':mysql_adx_strategy_test,
-    'mysql_adx_strategy',mysql_adx_strategy
+    'mysql_adx_strategy':mysql_adx_strategy
 }
