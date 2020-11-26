@@ -26,6 +26,16 @@ mysql_adx_strategy_test ={
     'database':'adx_strategy'
 }
 
+mysql_adx_strategy ={
+    'protocol':'mysql',
+    'user':'root',
+    'password':'123456',
+    'host':'192.168.3.64',
+    'port':3307,
+    'database':'adx_strategy'
+}
+
+
 
 
 clickhouse_cmd_local_adx ={
@@ -49,6 +59,9 @@ clickhouse_xn_adx ={
     'port':8123,
     'database':'xn_adx'
 }
+
+
+
 
 
 clickhouse_cmd_xn_adx ={
@@ -110,4 +123,5 @@ db_params = {
     'ch_xn_adx':clickhouse_xn_adx,
     'ch_cmd_local_adx':clickhouse_cmd_local_adx,
     'mysql_adx_strategy_test':mysql_adx_strategy_test,
+    'mysql_adx_strategy',mysql_adx_strategy
 }
