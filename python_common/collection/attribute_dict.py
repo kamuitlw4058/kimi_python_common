@@ -11,15 +11,22 @@ class AttributeDict(dict):
         for k, v in kwargs.items():
             self.__setitem__(k, v)
 
-    def __setitem__(self, key, value):
+    def _convert_value(self,value):
         if isinstance(value, dict) and not isinstance(value, AttributeDict):
             value = AttributeDict(value)
         elif isinstance(value, np.int64) or isinstance(value, np.uint64):
             value = int(value)
         elif isinstance(value, np.float32) or isinstance(value, np.float64):
             value = float(value)
+        return value
 
-        super().__setitem__(key, value)
+    def __setitem__(self, key, value):
+        value = self._convert_value(value)
+        super().__setattr__(key, value)
+    
+    def __setattr__(self, key, value):
+        value = self._convert_value(value)
+        super().__setattr__(key, value)
 
     def __getattr__(self, key):
         try:
@@ -34,5 +41,5 @@ class AttributeDict(dict):
             ret = dict_merge(merge_dict,self)
         self._init__(ret)
 
+    # __setattr__ = __setitem__
 
-    __setattr__ = __setitem__

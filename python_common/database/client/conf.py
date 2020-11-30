@@ -26,6 +26,18 @@ mysql_adx_strategy_test ={
     'database':'adx_strategy'
 }
 
+
+mysql_adp_ml_test ={
+    'protocol':'mysql',
+    'user':'root',
+    'password':'123456',
+    'host':'172.16.11.74',
+    'port':3306,
+    'database':'adp_ml',
+    'charset':'utf8'
+}
+
+
 mysql_adx_strategy ={
     'protocol':'mysql',
     'user':'root',
@@ -123,5 +135,6 @@ db_params = {
     'ch_xn_adx':clickhouse_xn_adx,
     'ch_cmd_local_adx':clickhouse_cmd_local_adx,
     'mysql_adx_strategy_test':mysql_adx_strategy_test,
-    'mysql_adx_strategy':mysql_adx_strategy
+    'mysql_adx_strategy':mysql_adx_strategy,
+    'mysql_adp_ml_test':mysql_adp_ml_test
 }
