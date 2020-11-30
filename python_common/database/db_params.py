@@ -39,7 +39,14 @@ class DBParams():
     def __init__(self,**kwargs):
         self._kwargs = kwargs
         self._hosts =kwargs.get('hosts',None)
-        self._charset =kwargs.get('charset','utf8')
+        self._host = kwargs.get('host',None)
+        if self._host is None:
+            if self._hosts is None:
+                raise KeyError(" params need host or hosts")
+            else:
+                self._host = random.choice(self._hosts)
+
+        self._charset =kwargs.get('charset','')
         self._protocol =kwargs.get('protocol',None)
         self._user = kwargs.get('user',None)
         self._password = kwargs.get('password',None)
@@ -51,6 +58,17 @@ class DBParams():
         self._database = kwargs.get('database',None)
         self._host = kwargs.get('host',None)
 
+    def to_jdbc_clickhouse_spark_option(self):
+        jdbc_clickhouse_url_temp = 'jdbc:clickhouse://{}:{}/{}'
+        jdbc_url = jdbc_clickhouse_url_temp.format(self._host,self._port,self._database)
+        option_dict ={
+            'driver':"ru.yandex.clickhouse.ClickHouseDriver",
+            'url':jdbc_url,
+           'user':self._user,
+           'passwrod':self._password
+        }
+        logger.debug(option_dict)
+        return option_dict
 
     @property
     def engine_url(self):
