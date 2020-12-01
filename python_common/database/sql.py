@@ -12,12 +12,50 @@ class SQL:
         self._table = table
         return self
 
+    def _col_exp(self,col,op=None):
+        ops = '('
+        ope = ')'
+        if op is None:
+            ops = ''
+            ope = ''
+            op = ''
+        if isinstance(col,tuple):
+            exp = col[0]
+            col_name = col[1]
+            return f'{op}{ops}{exp}{ope}  as {col_name}'
+        elif isinstance(col,str):
+            return f'{op}{ops}{col}{ope}'
+
+        raise ValueError(f'unknonw col type!: {col}')
+
+    def _col_name(self,col):
+        if isinstance(col,tuple):
+            return col[1]
+        elif isinstance(col,str):
+            return col
+        raise ValueError(f'unknonw col type!: {col}')
+
+    def _col_calc_exp(self,col):
+        if isinstance(col,tuple):
+            return col[0]
+        elif isinstance(col,str):
+            return col
+        raise ValueError(f'unknonw col type!: {col}')
+
     def select(self, fields):
-        self._fields += [i.strip() for i in fields if i.strip()]
+        if isinstance(fields,list):
+            self._fields += [self._col_exp(i) for i in fields]
+        else:
+            self._fields.append(self._col_exp(fields))
         return self
 
     def where(self, criteria):
-        self._criteria += [i.strip() for i in criteria if i.strip()]
+        if isinstance(criteria,str):
+            self._criteria.append(criteria)
+        elif isinstance(criteria,list):
+            self._criteria += [i.strip() for i in criteria if i.strip()]
+        else:
+            raise ValueError(f'unknonw col type: {type(criteria)} value:{criteria}')
         return self
 
     def groupby(self, grp):
@@ -56,7 +94,8 @@ class SQL:
             if date_criteria:
                 s.append('prewhere {}'.format(' and '.join(date_criteria)))
             rest_criteria = list(set(self._criteria) - set(date_criteria))
-            s.append('where {}'.format(' and '.join(rest_criteria)))
+            if len(rest_criteria) > 0:
+                s.append('where {}'.format(' and '.join(rest_criteria)))
 
         if self._groupby:
             s.append('group by {}'.format(', '.join(self._groupby)))
