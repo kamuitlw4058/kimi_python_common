@@ -65,7 +65,7 @@ class DBParams():
             'driver':"ru.yandex.clickhouse.ClickHouseDriver",
             'url':jdbc_url,
            'user':self._user,
-           'passwrod':self._password
+           'password':self._password
         }
         logger.debug(option_dict)
         return option_dict
