@@ -1,4 +1,5 @@
 class SQL:
+    AND = ' and '
     def __init__(self):
         self._fields = []
         self._table = ''
@@ -74,6 +75,10 @@ class SQL:
         self._sample = ratio
         return self
 
+    def build_where(self,s):
+        if len(self._criteria) > 1:
+            s.append('where {}'.format(self.AND.join(self._criteria)))
+
     def _buildMe(self):
         s = []
         if self._fields:
@@ -90,12 +95,7 @@ class SQL:
             s.append('sample {}'.format(self._sample))
 
         if self._criteria:
-            date_criteria = list(filter(lambda x: x.startswith('EventDate'), self._criteria))
-            if date_criteria:
-                s.append('prewhere {}'.format(' and '.join(date_criteria)))
-            rest_criteria = list(set(self._criteria) - set(date_criteria))
-            if len(rest_criteria) > 0:
-                s.append('where {}'.format(' and '.join(rest_criteria)))
+            self.build_where(s)
 
         if self._groupby:
             s.append('group by {}'.format(', '.join(self._groupby)))
@@ -115,3 +115,26 @@ class SQL:
 
     def to_string(self):
         return self.build_all()
+
+
+class ClickHouseSQL(SQL):
+    def __init__(self,partition_cols):
+        super().__init__()
+        if isinstance(partition_cols,str):
+            self._partition_cols = [partition_cols]
+        else:
+            self._partition_cols = _partition_cols
+
+    def build_where(self,s):
+        date_criteria = []
+        for exp_str in  self._criteria:
+            for part_col in  self._partition_cols:
+                if  exp_str.startswith(part_col):
+                    date_criteria.append(exp_str)
+        if date_criteria:
+            s.append('prewhere {}'.format(self.AND.join(date_criteria)))
+        rest_criteria = list(set(self._criteria) - set(date_criteria))
+        if len(rest_criteria) > 0:
+            s.append('where {}'.format(self.AND.join(rest_criteria)))
+
+    
