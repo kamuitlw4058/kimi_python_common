@@ -2,6 +2,7 @@
 import time
 
 from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 
 from multiprocessing import cpu_count
@@ -13,7 +14,7 @@ class ExecutorPool():
 
     def start(self,handler,data_list):
         start = time.time()
-        with ProcessPoolExecutor(max_workers=self.cpu_count) as executor:
+        with ThreadPoolExecutor(max_workers=self.cpu_count) as executor:
                 # 将 10 个任务提交给 executor，并收集 futures
                 futures = [executor.submit(handler, item) for item in data_list]
 
