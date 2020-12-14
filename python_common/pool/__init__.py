@@ -23,7 +23,8 @@ class ExecutorPool():
                 # 这个方法，使每次返回的 future，总是最先完成的 future
                 # 而不是先等待任务 1，再等待任务 2...
                 for future in as_completed(futures):
-                        print(f'result:{future.result()}')
+                    pass
+                    #print(f'result:{future.result()}')
         print ("Pool execution in " + str(time.time() - start), "seconds")
 
 
