@@ -1,4 +1,4 @@
-def chunked_file_line_reader(fp,sep = '\n', block_size=1024 * 32):
+def chunked_file_line_reader(fp,sep = '\n', block_size=1024 * 128):
     """生成器函数：分块读取文件内容"""
     remain = ''
     while True:
