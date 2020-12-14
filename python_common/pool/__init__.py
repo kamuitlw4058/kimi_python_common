@@ -14,7 +14,7 @@ class ExecutorPool():
 
     def start(self,handler,data_list):
         start = time.time()
-        with ThreadPoolExecutor(max_workers=self.cpu_count) as executor:
+        with ProcessPoolExecutor(max_workers=self.cpu_count) as executor:
                 # 将 10 个任务提交给 executor，并收集 futures
                 futures = [executor.submit(handler, item) for item in data_list]
 
