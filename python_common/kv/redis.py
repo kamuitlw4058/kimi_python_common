@@ -1,6 +1,6 @@
 import time
 from redis import StrictRedis   # 导入redis 模块
-from kimi_common.utils.logger import getLogger
+from python_common.utils.logger import getLogger
 
 logger = getLogger(__name__)
 
