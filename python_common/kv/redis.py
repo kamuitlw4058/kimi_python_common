@@ -9,8 +9,10 @@ class RedisClient():
     def __init__(self,host='localhost',port=6379,decode_responses=True):
         self.redis = StrictRedis(host=host, port=port, decode_responses=decode_responses) 
     
-    def set(self,k,v):
+    def set(self,k,v,expire=0):
         self.redis.set(k,v)
+        if expire > 0:
+            self.redis.expire(k,expire)
 
     def get(self,k):
         return self.redis.get(k)
