@@ -79,6 +79,15 @@ clickhouse_cmd_xn_adx ={
     'database':'xn_adx'
 }
 
+clickhouse_cmd_xn_adx_cluster ={
+    'protocol':'clickhouse',
+    'user':'xnad_suanfa',
+    'password':'M6119Hb#Aj80TtosdkjUDN89',
+    'host':'cc-uf6y3p4u3ff10s973.ads.aliyuncs.com',
+    'port':3306,
+    'database':'ad_adx'
+}
+
 
 clickhouse_xn_adp ={
     'protocol':'clickhouse',
@@ -120,6 +129,7 @@ db_params = {
     'mysql_adsense_pizarr':mysql_adsense_pizarr,
     'mysql_adsense_pizarr_test':mysql_adsense_pizarr_test,
     'ch_cmd_xn_adx':clickhouse_cmd_xn_adx,
+    'ch_cmd_xn_adx_cluster':clickhouse_cmd_xn_adx_cluster,
     'ch_xn_adx':clickhouse_xn_adx,
     'ch_cmd_local_adx':clickhouse_cmd_local_adx,
     'mysql_adx_strategy_test':mysql_adx_strategy_test,
