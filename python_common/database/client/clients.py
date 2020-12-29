@@ -47,4 +47,4 @@ class SqlalchemyClients:
 
         return client
 
-clients = SqlalchemyClients(db_params,True)
+clients = SqlalchemyClients(db_params,False)
