@@ -54,8 +54,14 @@ class ClickhouseCmdClient(BaseClient):
         return ' '.join(cmd_list)
 
     @func_elapsed
-    def read_value(self,sql,default_value,**kwargs):
-        pass
+    def read_value(self,sql,default_value=None,value_key='value',**kwargs):
+        df = self.read_sql(sql,**kwargs)
+        records_list = df.to_dict('records')
+        if len(records_list) != 0 and records_list[0].get(value_key,None) is not None:
+            value =  records_list[0][value_key]
+        else:
+            value = default_value
+        return value 
 
     @func_elapsed
     def read_sql(self,sql,**kwargs):
