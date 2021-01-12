@@ -1,6 +1,7 @@
 import time
 from redis import StrictRedis   # 导入redis 模块
 from python_common.utils.logger import getLogger
+import random
 
 logger = getLogger(__name__)
 
@@ -12,6 +13,9 @@ class RedisClient():
     def set(self,k,v,expire=0):
         self.redis.set(k,v)
         if expire > 0:
+            random_second = int(expire * 0.1)
+            if random_second >0:
+                expire = expire + random.randint(0,random_second)
             self.redis.expire(k,expire)
 
     def get(self,k):
