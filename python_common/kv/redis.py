@@ -10,10 +10,10 @@ class RedisClient():
     def __init__(self,host='localhost',port=6379,decode_responses=True):
         self.redis = StrictRedis(host=host, port=port, decode_responses=decode_responses) 
     
-    def set(self,k,v,expire=0):
+    def set(self,k,v,expire=0,expire_random_rate=0.1):
         self.redis.set(k,v)
         if expire > 0:
-            random_second = int(expire * 0.1)
+            random_second = int(expire * expire_random_rate)
             if random_second >0:
                 expire = expire + random.randint(0,random_second)
             self.redis.expire(k,expire)
