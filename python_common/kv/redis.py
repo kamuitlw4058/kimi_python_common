@@ -18,8 +18,12 @@ class RedisClient():
                 expire = expire + random.randint(0,random_second)
             self.redis.expire(k,expire)
 
-    def get(self,k):
-        return self.redis.get(k)
+    def get(self,k,default=None):
+        r = self.redis.get(k)
+        if r is None:
+            return default
+        else:
+            return r
     
     def batch_get(self,k_list,transaction=False):
         start =time.time()
