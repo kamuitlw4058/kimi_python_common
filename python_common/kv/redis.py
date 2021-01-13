@@ -24,6 +24,9 @@ class RedisClient():
             return default
         else:
             return r
+
+    def delete(self,k):
+        r.delete(k)
     
     def batch_get(self,k_list,transaction=False):
         start =time.time()
