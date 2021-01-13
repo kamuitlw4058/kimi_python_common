@@ -41,7 +41,7 @@ class SqlalchemyClient(BaseClient):
         return self._engine
 
     @func_elapsed
-    def read_value(self, sql,default_value,cache_pickle_path=None,use_cache=True,cache_file=True, **kwargs):
+    def read_value(self, sql,default_value=None,cache_pickle_path=None,use_cache=True,cache_file=True, **kwargs):
         df = self.read_sql(sql,cache_pickle_path=cache_pickle_path,use_cache=use_cache,cache_file=cache_file,**kwargs)
         records_list = df.to_dict('records')
         if len(records_list) != 0 and records_list[0].get('value',None) is not None:
