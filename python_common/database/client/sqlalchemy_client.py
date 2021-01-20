@@ -19,7 +19,7 @@ class SqlalchemyClient(BaseClient):
         self._default_engine_url = self._db_params.engine_url
         logger.info(f'default engine url:{self._default_engine_url}')
         charset = self._db_params.charset
-        connect_args = {}
+        connect_args = None
         if self._db_params.protocol == 'hive' and self._db_params.password is not None:
             connect_args ={'auth': 'LDAP'},
 
