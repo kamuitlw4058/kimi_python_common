@@ -9,4 +9,5 @@ conn = connect(host='192.168.66.115', port=10000)
 cur = conn.cursor()
 cur.execute('show tables')
 data_list=cur.fetchall()
-    for data in data_list:
+for data in data_list:
+    print(data)
