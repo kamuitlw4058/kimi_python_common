@@ -125,7 +125,7 @@ hive_xn_bigdata = {
     'user':'suanfa',
     'password':'suanfa123',
     'host':'192.168.66.115',
-    'port':1000,
+    'port':10000,
     'database':'dc_ods_voice'
 }
 
