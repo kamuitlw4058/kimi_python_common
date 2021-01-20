@@ -19,11 +19,15 @@ class SqlalchemyClient(BaseClient):
         self._default_engine_url = self._db_params.engine_url
         logger.info(f'default engine url:{self._default_engine_url}')
         charset = self._db_params.charset
+        connect_args = {}
+        if self._db_params.protocol == 'hive' and self._db_params.password is not None:
+            connect_args ={'auth': 'LDAP'},
+
         if charset is not None and len(charset) != 0:
             logger.debug(f"SqlalchemyClient charset:{charset} len:{len(charset)}")
-            self._engine = create_engine(self._default_engine_url,encoding=self._db_params.charset,echo=self._echo)
+            self._engine = create_engine(self._default_engine_url,encoding=self._db_params.charset,echo=self._echo,connect_args=connect_args)
         else:
-            self._engine = create_engine(self._default_engine_url,echo=self._echo)
+            self._engine = create_engine(self._default_engine_url,echo=self._echo,connect_args=connect_args)
         self.insp = None
     
     @property
