@@ -5,9 +5,9 @@
 # print(df)
 
 from impala.dbapi import connect
-conn = connect(host='192.168.66.115', port=10000)
+conn = connect(host='192.168.66.115', port=21050)
 cur = conn.cursor()
-cur.execute('show tables')
+cur.execute('SHOW DATABASES')
 data_list=cur.fetchall()
 for data in data_list:
     print(data)
