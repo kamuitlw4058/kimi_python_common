@@ -25,12 +25,11 @@ class SqlalchemyClient(BaseClient):
              create_engine_params['connect_args'] ={'auth': 'LDAP'},
 
         create_engine_params['echo'] = self._echo
-        create_engine_params['url'] = self._default_engine_url
         if charset is not None and len(charset) != 0:
             logger.debug(f"SqlalchemyClient charset:{charset} len:{len(charset)}")
             create_engine_params['encoding'] = self._db_params.charset
 
-        self._engine = create_engine(**create_engine_params)
+        self._engine = create_engine(self._default_engine_url,**create_engine_params)
         self.insp = None
     
     @property
