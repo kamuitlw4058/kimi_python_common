@@ -120,6 +120,15 @@ clickhouse_xn_adp_knowledge ={
     'database':'xn_adp_knowledge'
 }
 
+hive_xn_bigdata = {
+    'protocol':'hive',
+    'user':'suanfa',
+    'password':'suanfa123!',
+    'host':'192.168.66.115',
+    'port':1000,
+    'database':'dc_ods_voice'
+}
+
 
 db_params = {
     'default':clickhouse_xn_adp,
@@ -134,5 +143,6 @@ db_params = {
     'ch_cmd_local_adx':clickhouse_cmd_local_adx,
     'mysql_adx_strategy_test':mysql_adx_strategy_test,
     'mysql_adx_strategy':mysql_adx_strategy,
-    'mysql_adp_ml_test':mysql_adp_ml_test
+    'mysql_adp_ml_test':mysql_adp_ml_test,
+    'hive_xn_bigdata':hive_xn_bigdata
 }
