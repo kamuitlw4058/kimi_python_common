@@ -77,7 +77,11 @@ class DBParams():
     @property
     def engine_url(self):
         return DBParams.get_engine_url(**DBParams.engine_params(**self._kwargs))
-    
+        
+    @property
+    def protocol(self):
+        return self._protocol
+
     @property
     def host(self):
         if self._hosts and isinstance(self._hosts,list):
