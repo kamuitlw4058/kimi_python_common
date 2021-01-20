@@ -11,11 +11,15 @@ class DBParams():
     def get_engine_url(cls,**kwargs):
         engine_params_dict =DBParams.engine_params(**kwargs)
         engine_url = '{protocol}://{user}:{password}@{host}:{port}/{database}'
+        engine_without_user_url = '{protocol}://{host}:{port}/{database}'
         charset = engine_params_dict.get('charset',None) 
         if charset is not None:
             engine_url = f'{engine_url}?charset={charset}'
-            
-        engine_url =engine_url.format(**engine_params_dict)
+        if engine_params_dict.get('user',None) is not None:
+            engine_url =engine_url.format(**engine_params_dict)
+        else:
+            engine_url =engine_without_user_url.format(**engine_params_dict)
+
         return engine_url
 
     @classmethod

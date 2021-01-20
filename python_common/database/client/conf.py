@@ -123,8 +123,8 @@ clickhouse_xn_adp_knowledge ={
 hive_xn_bigdata = {
     'protocol':'hive',
     'user':'suanfa',
-    'password':'suanfa123',
-    'host':'192.168.66.115',
+    #'password':'suanfa123',
+    #'host':'192.168.66.115',
     'port':1000,
     'database':'dc_ods_voice'
 }
