@@ -1,10 +1,10 @@
 import os
 from types import FunctionType, MethodType
 
-def false_filter(filepath,filename):
+def false_filter(filepath,filename,last_dir=None):
     return False
 
-def true_filter(filepath,filename):
+def true_filter(filepath,filename,last_dir=None):
     return True
 
 class ScanDataFiles():
@@ -38,7 +38,7 @@ class ScanDataFiles():
 
 
 
-    def scan(self,base_dir =None,data_dir=None,file_filters=None,dir_filters=None):
+    def scan(self,base_dir =None,data_dir=None,file_filters=None,dir_filters=None,last_dir=None):
         if base_dir is None:
             base_dir = self._data_path_base
         if data_dir is None:
@@ -51,10 +51,10 @@ class ScanDataFiles():
 
         for filename in os.listdir(dir_path):
             filepath = os.path.join(dir_path, filename)
-            if os.path.isdir(filepath) and dir_filter(filepath,filename):
+            if os.path.isdir(filepath) and dir_filter(filepath,filename,last_dir):
                 print(f"will check dir:{filepath}")
-                self.scan(base_dir,os.path.join(data_dir,filename),file_filters=file_next_filters,dir_filters=dir_next_filters)
-            if os.path.isfile(filepath) and file_filter(filepath,filename):
+                self.scan(base_dir,os.path.join(data_dir,filename),file_filters=file_next_filters,dir_filters=dir_next_filters,last_dir=filename)
+            if os.path.isfile(filepath) and file_filter(filepath,filename,last_dir):
                 print(f'will process file:{filepath}')
                 self._files.append((base_dir,data_dir,filename))
 

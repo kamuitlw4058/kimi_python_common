@@ -5,7 +5,7 @@ from datetime import datetime,timedelta
 
 
 
-def level1_dir_filter(filepath,filename):
+def level1_dir_filter(filepath,filename,last_dir=None):
     try:
         dir_date = str_to_datetime(filename)
         if  dir_date.date() >=  (datetime.now() - timedelta(hours=5)).date():
@@ -16,9 +16,13 @@ def level1_dir_filter(filepath,filename):
     return False
 
 
-def level2_dir_filter(filepath,filename):
+def level2_dir_filter(filepath,filename,last_dir=None):
     try:
+        print(last_dir)
+        cur_hour = datetime.now().hour
+
         hour = int(filename)
+        if hour > 
         return True
     except Exception as e:
         print(e)
