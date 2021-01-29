@@ -16,10 +16,20 @@ def level1_dir_filter(filepath,filename):
     return False
 
 
+def level2_dir_filter(filepath,filename):
+    try:
+        hour = int(filename)
+        return True
+    except Exception as e:
+        print(e)
+
+    return False
+
+
 
 dir_filters = [
     level1_dir_filter,
-    true_filter,
+    level2_dir_filter,
     true_filter
 
 ]
