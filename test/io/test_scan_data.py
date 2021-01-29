@@ -48,11 +48,7 @@ dir_filters = [
 ]
 
 
-file_filters = [
-    false_filter,
-    false_filter,
-    level2_file_filter
-]
+file_filters = level2_file_filter
 
 
 s = ScanDataFiles('test','/ai/suanfa/user_behavior_data_min',file_filters=false_filter,dir_filters=dir_filters)
