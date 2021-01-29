@@ -16,13 +16,11 @@ def level1_dir_filter(filepath,filename,last_dir=None):
     return False
 
 
-def level2_dir_filter(filepath,filename,last_dir=None):
+def level2_dir_filter(filepath,filename,dir_list):
     try:
-        print(last_dir)
+        print(dir_list)
         cur_hour = datetime.now().hour
-
         hour = int(filename)
-        if hour > 
         return True
     except Exception as e:
         print(e)
