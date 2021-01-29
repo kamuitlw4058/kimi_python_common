@@ -1,6 +1,5 @@
 import os
 from types import FunctionType, MethodType
-from python_common.utils.datetime_utils import  str_to_datetime
 
 def false_filter(filepath,filename):
     return False
@@ -62,42 +61,3 @@ class ScanDataFiles():
 
     def process_files(self):
         print(self._files)
-
-
-def level2_file_filter(filepath,filename):
-    #print(filename)
-    if filename.startswith("part"):
-        return True
-    else:
-        return False
-
-file_filters = [
-    false_filter,
-    level2_file_filter,
-    level2_file_filter
-]
-
-
-
-
-def level1_dir_filter(filepath,filename):
-    try:
-        dir_date = str_to_datetime(dirpath)
-        if  dir_date.date() >=  (datetime.now() - timedelta(hours=5)).date():
-            return True
-    except Exception as e:
-        pass
-
-    return False
-
-
-
-dir_filters = [
-    level1_dir_filter,
-    true_filter
-]
-
-
-s = ScanDataFiles('test','data/test_datasource',file_filters=false_filter,dir_filters=dir_filters)
-s.scan()
-s.process_files()
