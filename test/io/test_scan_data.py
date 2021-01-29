@@ -20,7 +20,6 @@ def level2_dir_filter(filepath,filename,dir_list):
     try:
         dt_str = f'{dir_list[0]} {filename}'
         dt =  datetime.strptime(dt_str, "%Y-%m-%d %H")
-        print(dt)
         if dt >=  (datetime.now() -  timedelta(hours=5)):
             return True
         else:
@@ -31,12 +30,28 @@ def level2_dir_filter(filepath,filename,dir_list):
     return False
 
 
+def level2_file_filter(filepath,filename,dir_list):
+    try：
+        if filename.startswith('user_behavior_data') and not filename.endswith('.in-progress')  and not filename.endswith('.pending')：
+            return True
+    except Exception as e:
+        print(e)
+
+    return False    
+    
+
 
 dir_filters = [
     level1_dir_filter,
     level2_dir_filter,
     true_filter
+]
 
+
+file_filters = [
+    false_filter,
+    false_filter,
+    level2_file_filter
 ]
 
 
