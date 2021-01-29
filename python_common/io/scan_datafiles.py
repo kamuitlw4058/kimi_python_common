@@ -53,7 +53,10 @@ class ScanDataFiles():
             filepath = os.path.join(dir_path, filename)
             if os.path.isdir(filepath) and dir_filter(filepath,filename,dir_list):
                 print(f"will check dir:{filepath}")
-                cur_dir_list =  dir_list.copy()
+                if dir_list is None:
+                    cur_dir_list = []
+                else:
+                    cur_dir_list =  dir_list.copy()
                 cur_dir_list.append(filename)
                 self.scan(base_dir,os.path.join(data_dir,filename),file_filters=file_next_filters,dir_filters=dir_next_filters,dir_list=cur_dir_list)
             if os.path.isfile(filepath) and file_filter(filepath,filename,dir_list):
