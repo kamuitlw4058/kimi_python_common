@@ -18,10 +18,11 @@ def level1_dir_filter(filepath,filename,last_dir=None):
 
 def level2_dir_filter(filepath,filename,dir_list):
     try:
-        print(dir_list)
-        cur_hour = datetime.now().hour
-        hour = int(filename)
-        return True
+        dt =  str_to_datetime(f'{dir_list[0]} {filename}',ts_format="%Y-%m-%d %H")
+        if dt >=  (datetime.now() -  timedelta(hours=5)):
+            return True
+        else:
+            return False
     except Exception as e:
         print(e)
 
