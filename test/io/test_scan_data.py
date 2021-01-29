@@ -1,5 +1,5 @@
 from python_common.utils.datetime_utils import  str_to_datetime
-from python_common.io.scan_datafiles import ScanDataFiles
+from python_common.io.scan_datafiles import ScanDataFiles,true_filter,false_filter
 
 from datetime import datetime,timedelta
 
