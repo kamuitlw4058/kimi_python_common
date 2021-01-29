@@ -19,9 +19,8 @@ def level1_dir_filter(filepath,filename,last_dir=None):
 def level2_dir_filter(filepath,filename,dir_list):
     try:
         dt_str = f'{dir_list[0]} {filename}'
-        print(dt_str)
-        dt =  str_to_datetime(dt_str,ts_format="%Y-%m-%d %H")
-        print(dt_str)
+        dt =  datetime.strptime(dt_str, "%Y-%m-%d %H")
+        print(dt)
         if dt >=  (datetime.now() -  timedelta(hours=5)):
             return True
         else:
